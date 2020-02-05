@@ -34,3 +34,13 @@ Planning
 > Log of the Meeting
   - Daniel  
 <br/>
+
+Notes
+-----
+> We want to support flashcards, notes, dictionaries and possibly images/audio files?
+
+> Users will likely be personal, student, teacher and maybe admin?
+
+> An extra feature could be allowing for sharing and online interaction between users?
+
+> We'll use JavaFX for the implementation of the GUI, which should be like swing.
