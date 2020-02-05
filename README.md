@@ -1,5 +1,11 @@
 # Group 40 - Studioruum
 
+Meetings should be every Wednesday 11:00 - 12:00 in the 3E group study room in the Harold Cohen Library.
+
+Current Tasks
+-------------
+> Complete the Requirements for the End of Tuesday
+
 Schedule
 --------
 WEEK 02 - Requirements  
