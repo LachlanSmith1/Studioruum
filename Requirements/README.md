@@ -4,25 +4,25 @@ Planning
 --------
 
 > Mission Statement
-  - Lloyd
+  - Lloyd  
   
 > Mission Objectives
-  - Jordan
+  - Jordan  
   
 > System Boundary Diagram
-  - Daniel
+  - Daniel  
 
 > User Views and Requirements
-  - Lachlan
+  - Lachlan  
 
 > Transaction Requirements
-  - Bobby
+  - Bobby  
   
 > System Requirements
-  - Tyler
+  - Tyler  
   
 > Project Gannt Chart
-  - Lloyd
+  - Lloyd  
   
 > Log of the Meeting
-  - Daniel
+  - Daniel  
