@@ -32,7 +32,7 @@ Planning
 <br/>
 
 > Log of the Meeting
-  - Daniel  
+  - Lloyd
 <br/>
 
 Notes
