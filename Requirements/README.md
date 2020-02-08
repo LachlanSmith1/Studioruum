@@ -48,7 +48,6 @@ Planning
 
 > Log of the Meeting
   - Lloyd
-<br/>
 
 Notes
 -----
