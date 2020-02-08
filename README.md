@@ -8,7 +8,6 @@ Current Tasks
 
 Schedule
 --------
-WEEK 02 - Requirements  
 WEEK 03 - Requirements  
 WEEK 04 - Design  
 WEEK 05 - Design  
