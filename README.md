@@ -1,20 +1,16 @@
 # Group 40 - Studioruum
 
-Meetings should be every Wednesday 11:00 - 12:00 in the 3E group study room in the Harold Cohen Library.
+Meetings
+--------
+Held on Wednesdays (11:00 - 12:00) in the 3E Group Study Room, Harold Cohen Library.
+
+Next Meeting Topic: Checking the Progress of the Design Work.
 
 Current Tasks
 -------------
-> Complete the Requirements for the End of Tuesday
-
-Schedule
---------
-WEEK 03 - Requirements  
-WEEK 04 - Design  
-WEEK 05 - Design  
-WEEK 06 - Design  
-WEEK 07 - Design  
-WEEK 08 - Implementation / Testing  
-WEEK 09 - Implementation / Testing  
-WEEK 10 - Implementation / Testing  
-WEEK 11 - Portfolio / Demo  
-WEEK 12 - Portfolio / Demo  
+* LJ - Global Logical Data Model / Planning
+* DP - Data Dictionary / Requirements
+* BC - Transaction Matrix
+* LS - Interface Design
+* JC - Interface Design
+* TB - Logical Table Structure / Physical Table Structure
