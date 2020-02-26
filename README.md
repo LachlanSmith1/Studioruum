@@ -1,16 +1,24 @@
 # Group 40 - Studioruum
 
-Meetings
---------
-Held on Wednesdays (11:00 - 12:00) in the 3E Group Study Room, Harold Cohen Library.
-
-Next Meeting Topic: Checking the Progress of the Design Work.
-
-Current Tasks
+Current Stuff
 -------------
-* LJ - Global Logical Data Model / Planning
-* DP - Data Dictionary / Requirements
-* BC - Transaction Matrix
-* LS - Interface Design
-* JC - Interface Design
-* TB - Logical Table Structure / Physical Table Structure
+
+* Learn Git
+	* Clone the Repository to Your PC and Create a Branch For Yourself
+	* https://learngitbranching.js.org/
+
+* Learn Technologies
+	* Look Into Anything You Need to Know to Make Your Area of the Application
+	* Eg. MySQL / JavaFX
+
+* Plan Implementation
+	* Figure Out Roughly What Needs Doing and Save This Stuff Into the Miscellaneous Folder as firstname_planning
+	* Look in the Implementation Folder For Assigned Areas
+
+* Other Tasks
+	* Tyler Can Start to Combine the Design Doc
+	* Lloyd Can Start to Update the Gannt Chart
+
+* Upcoming Meeting
+	* Review the Planning
+	* Sort Out the Design Meeting
