@@ -4,7 +4,7 @@ Current Stuff
 -------------
 
 * Learn Git
-	* Clone the Repository to Your PC and Create a Branch For Yourself
+	* Learn About Branching and Clone the Repository to Your PC
 	* https://learngitbranching.js.org/
 
 * Learn Technologies
