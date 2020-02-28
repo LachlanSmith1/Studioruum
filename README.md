@@ -12,7 +12,7 @@ Current Stuff
 	* Eg. MySQL / JavaFX
 
 * Plan Implementation
-	* Figure Out Roughly What Needs Doing and Save This Stuff Into the Miscellaneous Folder as firstname_planning
+	* Figure Out Roughly What You Need to Do Save Notes Into the Miscellaneous Folder
 	* Look in the Implementation Folder For Assigned Areas
 
 * Other Tasks
