@@ -3,22 +3,20 @@
 Current Stuff
 -------------
 
-* Learn Git
-	* Learn About Branching and Clone the Repository to Your PC
-	* https://learngitbranching.js.org/
+* Tasks for Everyone
+	* Learn Basic Git
+	
+* Tasks for Tyler
+	* Finish Design Doc
 
-* Learn Technologies
-	* Look Into Anything You Need to Know to Make Your Area of the Application
-	* Eg. MySQL / JavaFX
+* Tasks for Lloyd
+	* Update Design Doc
 
-* Plan Implementation
-	* Figure Out Roughly What You Need to Do Save Notes Into the Miscellaneous Folder
-	* Look in the Implementation Folder For Assigned Areas
+* Tasks for Lachlan
+	* Learn JavaFX
 
-* Other Tasks
-	* Tyler Can Start to Combine the Design Doc
-	* Lloyd Can Start to Update the Gannt Chart
+* Tasks for Jordan
+	* Learn JavaFX
 
-* Upcoming Meeting
-	* Review the Planning
-	* Sort Out the Design Meeting
+* Tasks for Bobby
+	* Create a Mockup Database
