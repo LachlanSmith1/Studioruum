@@ -12,6 +12,9 @@ Current Stuff
 * Tasks for Lloyd
 	* Update Design Doc
 
+* Tasks for Daniel
+	* Research Android
+
 * Tasks for Lachlan
 	* Learn JavaFX
 
