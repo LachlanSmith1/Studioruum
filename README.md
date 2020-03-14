@@ -3,23 +3,4 @@
 Current Stuff
 -------------
 
-* Tasks for Everyone
-	* Learn Basic Git
-	
-* Tasks for Tyler
-	* Finish Design Doc
-
-* Tasks for Lloyd
-	* Update Design Doc
-
-* Tasks for Daniel
-	* Research Android
-
-* Tasks for Lachlan
-	* Learn JavaFX
-
-* Tasks for Jordan
-	* Learn JavaFX
-
-* Tasks for Bobby
-	* Create a Mockup Database
+Everyone needs to make a powerpoint for their section of the design review and share it by Monday so it can be combined with the other sections. Similarly, you should be able to answer questions on your section and ideally the next week should have quite a bit of talk in the discord. Each powerpoint should last approximatelty five minutes, and we should have a rehersal sorta deal in next week's meeting if it is before the design review.
