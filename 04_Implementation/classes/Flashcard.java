@@ -24,6 +24,22 @@ public class Flashcard extends Resource
 		
 	}
 	
+	//gets the front content
+	public String getFront()
+	{
+
+		return frontContent;
+		
+	}
+	
+	//gets the back content
+	public String getBack()
+	{
+		
+		return backContent;
+		
+	}
+	
 	public static void main(String[] args)
 	{
 		
