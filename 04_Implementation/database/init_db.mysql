@@ -38,15 +38,15 @@ create table classruum_scholars(
 
 create table resources(
   resource_id int NOT NULL auto_increment,
-  user_id int NOT NULL,
+  username varchar(32) NOT NULL,
   primary key(resource_id),
-  foreign key(user_id) references users(user_id)
+  foreign key(username) references users(username)
 );
 
 create table flashcards(
   flashcard_id int NOT NULL auto_increment,
   resource_id int NOT NULL,
-  dictionary_id int,
+  dictionary_id int NOT NULL,
   quiz_id int,
   front_content varchar(255) NOT NULL,
   back_content varchar(255) NOT NULL,
@@ -94,8 +94,8 @@ create table comments(
   comment_id int NOT NULL auto_increment,
   forum_id int NOT NULL,
   comment_content varchar(255) NOT NULL,
-  user_id int NOT NULL,
+  username varchar(32) NOT NULL,
   primary key(comment_id),
   foreign key(forum_id) references foruums(forum_id),
-  foreign key(user_id) references users(user_id)
+  foreign key(username) references users(username)
 );
