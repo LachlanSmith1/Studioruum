@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"  fx:controller="gui.Controller">
+    <children>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+        </GridPane>
+        <VBox prefHeight="400.0" prefWidth="640.0">
+            <children>
+                <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label alignment="CENTER" layoutX="-3.0" layoutY="40.0" prefHeight="64.0" prefWidth="647.0" text="studioruum">
+                            <font>
+                                <Font name="Segoe UI Semibold" size="43.0" />
+                            </font>
+                        </Label>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#b9deff" height="160.0" layoutX="62.0" layoutY="174.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" width="96.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d3ffcf" height="160.0" layoutX="167.0" layoutY="174.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" width="96.0" />
+                  <Label layoutX="78.0" layoutY="305.0" text="FLASHCARD" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fcffd1" height="160.0" layoutX="272.0" layoutY="174.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" width="96.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffe7d1" height="160.0" layoutX="377.0" layoutY="174.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" width="96.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffd1d1" height="160.0" layoutX="484.0" layoutY="174.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" width="96.0" />
+                  <Label layoutX="128.0" layoutY="104.0" prefHeight="19.0" prefWidth="388.0" text="&quot;Learn from yesterday, live for today, hope for tomorrow. " textAlignment="CENTER" textFill="#5a5a5a" wrapText="true">
+                     <font>
+                        <Font name="Segoe UI Light" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="121.0" layoutY="124.0" text="The important thing is not to stop questioning&quot; - Albert Einstein" textFill="#5a5a5a">
+                     <font>
+                        <Font name="Segoe UI Light" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="197.0" layoutY="305.0" text="NOTES" />
+                  <Label layoutX="288.0" layoutY="305.0" text="DICTIONARY" />
+                  <Label layoutX="400.0" layoutY="305.0" text="FORUUM" />
+                  <Label layoutX="498.0" layoutY="305.0" text="CLASSRUUM" />
+                  <Button layoutX="62.0" layoutY="176.0" mnemonicParsing="false" onAction="#goFlashcard" opacity="0.0" prefHeight="160.0" prefWidth="96.0" text="Button" />
+                  <Button layoutX="167.0" layoutY="174.0" mnemonicParsing="false" onAction="#goNotes" opacity="0.0" prefHeight="160.0" prefWidth="96.0" text="Button" />
+                  <Button layoutX="275.0" layoutY="174.0" mnemonicParsing="false" onAction="#goDictionary" opacity="0.0" prefHeight="160.0" prefWidth="96.0" text="Button" />
+                  <Button layoutX="377.0" layoutY="176.0" mnemonicParsing="false" onAction="#goForuum" opacity="0.0" prefHeight="160.0" prefWidth="96.0" text="Button" />
+                  <Button layoutX="484.0" layoutY="174.0" mnemonicParsing="false" onAction="#goClassruumScholar" opacity="0.0" prefHeight="160.0" prefWidth="96.0" text="Button" />
+                    </children>
+                </AnchorPane>
+            </children>
+        </VBox>
+    </children>
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+</GridPane>
