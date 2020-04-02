@@ -11,8 +11,36 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class Controller {
+    
+    public String accountType="";
 
-    Boolean picked=false;
+    //checks if the username exists in the database
+    public Boolean isUnique(String username){
+        Boolean unique=true;
+        //go through user table
+        //if username==anything in database
+        //unique=false
+        return unique;
+    }
+
+    //checks if the username and password combo used for sign up is valid
+    public void validSignUp(ActionEvent event) throws IOException{
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = window.getScene();
+        TextField uname = (TextField) scene.lookup("#logintxt");
+        TextField psswrd = (TextField) scene.lookup("#passwordtxt");
+        TextField Repsswrd = (TextField) scene.lookup("#Repasswordtxt");
+        String username = uname.getText();
+        String password = psswrd.getText();
+        String Repassword = Repsswrd.getText();
+
+        if (isUnique(username)==true&&password.equals(Repassword)&&password.length()>5&&accountType!=""){
+            goHome(event);
+            //create new record and add to database
+        }
+    }
+    
+    
 
 // hyperlink on the log in page that allows user to register
     public void signUplink(ActionEvent event) throws IOException{
@@ -121,25 +149,54 @@ public class Controller {
         window.show();
     }
 
-    public void selected(ActionEvent event) throws IOException{
-
-        Image scholarslct = new Image("@gui/scholarslct.png");
-        Image scholarim = new Image("@gui/scholar.png");
-
+    public void Scholarselected(MouseEvent event) throws IOException{
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
 
-        ImageView scholar = (ImageView) scene.lookup("scholarunselect");
+        ImageView scholar = (ImageView) scene.lookup("#scholarunselect");
+        ImageView educator = (ImageView) scene.lookup("#educatorunselect");
+        Label scholartxt = (Label) scene.lookup("#scholartxt");
+        Label educatortxt = (Label) scene.lookup("#educatortxt");
 
-        if(picked==true){
-            scholar.setImage(scholarim);
-            picked=false;
+        if(scholar.getOpacity()==0){
+            scholar.setOpacity(1);
+            scholartxt.setStyle("-fx-font-weight: normal");
+            accountType="";
         }
         else{
-            scholar.setImage(scholarslct);
-            picked=true;
+            scholar.setOpacity(0);
+            scholartxt.setStyle("-fx-font-weight: bold");
+            accountType="Scholar";
+            if (educator.getOpacity()==0) {
+                educator.setOpacity(1);
+                educatortxt.setStyle("-fx-font-weight: normal");
+            }
         }
+    }
 
+    public void Educatorselected(MouseEvent event) throws IOException {
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = window.getScene();
+
+        ImageView educator = (ImageView) scene.lookup("#educatorunselect");
+        ImageView scholar = (ImageView) scene.lookup("#scholarunselect");
+        Label educatortxt = (Label) scene.lookup("#educatortxt");
+        Label scholartxt = (Label) scene.lookup("#scholartxt");
+
+        if (educator.getOpacity()==0) {
+            educator.setOpacity(1);
+            educatortxt.setStyle("-fx-font-weight: normal");
+            accountType="";
+        }
+        else {
+            educator.setOpacity(0);
+            educatortxt.setStyle("-fx-font-weight: bold");
+            accountType="Educator";
+            if(scholar.getOpacity()==0){
+                scholar.setOpacity(1);
+                scholartxt.setStyle("-fx-font-weight: normal");
+            }
+        }
     }
 
 }
