@@ -12,10 +12,11 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
   <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="173.0" minWidth="10.0" prefWidth="165.0" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="327.0" minWidth="10.0" prefWidth="240.0" />
@@ -29,63 +30,81 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Button mnemonicParsing="false" text="Let's get started!" translateX="75.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Button mnemonicParsing="false" onAction="#validSignUp" text="Let's get started!" translateX="75.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
       <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <children>
-            <TextField promptText="Username / Email">
+            <TextField fx:id="logintxt" promptText="Username / Email">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin>
             </TextField>
-            <PasswordField promptText="Password">
+            <PasswordField fx:id="passwordtxt" promptText="Password">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin>
             </PasswordField>
-            <PasswordField promptText="Re-enter password" />
+            <PasswordField fx:id="Repasswordtxt" promptText="Re-enter password" />
          </children>
       </VBox>
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
-            <ImageView fitHeight="76.0" fitWidth="81.0" pickOnBounds="true" preserveRatio="true" translateX="25.0">
-               <image>
-                  <Image url="@../../../../OneDrive/Documents/208/gui/scholar.png" />
-               </image>
-               <HBox.margin>
-                  <Insets right="20.0" top="8.0" />
-               </HBox.margin>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </ImageView>
-            <ImageView fitHeight="92.0" fitWidth="94.0" pickOnBounds="true" preserveRatio="true" translateX="25.0">
-               <image>
-                  <Image url="@../../../../OneDrive/Documents/208/gui/educator.png" />
-               </image>
-               <HBox.margin>
-                  <Insets left="15.0" />
-               </HBox.margin>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </ImageView>
+            <StackPane prefHeight="92.0" prefWidth="118.0">
+               <children>
+                  <ImageView fitHeight="76.0" fitWidth="81.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@gui/scholar.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <ImageView fx:id="scholarunselect" fitHeight="76.0" fitWidth="81.0" onMouseClicked="#Scholarselected" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@gui/scholarslct.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+            </StackPane>
+            <StackPane prefHeight="92.0" prefWidth="120.0">
+               <children>
+                  <ImageView fitHeight="92.0" fitWidth="94.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@gui/educator.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <ImageView fx:id="educatorunselect" fitHeight="92.0" fitWidth="94.0" onMouseClicked="#Educatorselected" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@gui/educatorslct.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+            </StackPane>
          </children>
       </HBox>
       <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" translateX="25.0" GridPane.columnIndex="1">
          <image>
-            <Image url="@../../../../OneDrive/Documents/208/gui/studioruum.png" />
+            <Image url="@gui/studioruum.png" />
          </image>
       </ImageView>
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <children>
-            <Label text="Scholar" translateX="30.0" translateY="20.0">
+            <Label fx:id="scholartxt" text="Scholar" translateX="25.0" translateY="20.0">
                <font>
-                  <Font name="Segoe UI Light" size="20.0" />
+                  <Font name="Segoe UI" size="20.0" />
                </font>
             </Label>
-            <Label text="Educator" translateX="75.0" translateY="20.0">
+            <Label fx:id="educatortxt" text="Educator" translateX="75.0" translateY="20.0">
                <font>
-                  <Font name="Segoe UI Light" size="20.0" />
+                  <Font name="Segoe UI" size="20.0" />
                </font>
             </Label>
          </children>
