@@ -19,6 +19,16 @@ public class LocalDB {
         }
     }
 
+    public void refreshConnection() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
+            System.out.println("Connected to database");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
     public List allResources() {
         List<Hashtable> resourceList = new ArrayList<Hashtable>();
 
@@ -66,9 +76,9 @@ public class LocalDB {
         }
     }
 
-    // Returns list of hashtable containing all notes in the local db
+    // Now returns list of Note objects containing all notes in the local db
     public List allNotes() {
-        List<Hashtable> noteList = new ArrayList<Hashtable>();
+        List<Note> noteList = new ArrayList<>();
 
         try {
             stmt = conn.createStatement();
@@ -76,15 +86,17 @@ public class LocalDB {
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                Hashtable record = new Hashtable();
+                // Fetch all values of current record
+                int noteId = rs.getInt("note_id");
+                int resourceId = rs.getInt("resource_id");
+                String noteTitle = rs.getString("note_title");
+                String noteContent = rs.getString("note_content");
 
-                record.put("note_id", rs.getInt("note_id"));
-                record.put("resource_id", rs.getInt("resource_id"));
-                record.put("note_title", rs.getString("note_title"));
-                record.put("note_content", rs.getString("note_content"));
-
+                // Create Note object and add to list
+                Note record = new Note(noteId, resourceId, noteTitle, noteContent);
                 noteList.add(record);
             }
+
         } catch (Exception e) {
             System.out.println("allNotes Error: " + e.getMessage());
         }
@@ -122,15 +134,11 @@ public class LocalDB {
     public void deleteNote(int noteId) {
         try {
             // Retrieve corresponding resource_id for note to delete
-            sql = "SELECT resource_id FROM notes WHERE note_id = ?";
+            sql = "SELECT resource_id AS id_to_delete FROM notes WHERE note_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, noteId);
-            ResultSet rs = stmt.executeQuery(sql);
-            int resourceId = 0;
-
-            while (rs.next()) {
-                resourceId = rs.getInt("resource_id");
-            }
+            ResultSet rs = pstmt.executeQuery();
+            int resourceId = rs.getInt("id_to_delete");
 
             // Delete record from resources table
             sql = "DELETE FROM resources WHERE resource_id = ?";
@@ -148,6 +156,20 @@ public class LocalDB {
         }
     }
 
+    // Updates a note record from local db
+    public void updateNote(int noteId, String noteTitle, String noteContent) {
+        try {
+            sql = "UPDATE notes SET note_title = ?, note_content = ? WHERE note_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, noteTitle);
+            pstmt.setString(2, noteContent);
+            pstmt.setInt(3, noteId);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("updateNote Error: " + e.getMessage());
+        }
+    }
+
     // Retrieves note record from local db
     // Returns hash table (similar to a dictionary) with content of selected record
     public Hashtable retrieveNote(int noteId) {
@@ -157,7 +179,7 @@ public class LocalDB {
             sql = "SELECT * FROM notes WHERE note_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, noteId);
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 record.put("note_id", rs.getInt("note_id"));
@@ -226,15 +248,11 @@ public class LocalDB {
     public void deleteQuiz(int quizId) {
         try {
             // Retrieve corresponding resource_id for quiz to delete
-            sql = "SELECT resource_id FROM quizzes WHERE quiz_id = ?";
+            sql = "SELECT resource_id AS id_to_delete FROM quizzes WHERE quiz_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, quizId);
-            ResultSet rs = stmt.executeQuery(sql);
-            int resourceId = 0;
-
-            while (rs.next()) {
-                resourceId = rs.getInt("resource_id");
-            }
+            ResultSet rs = pstmt.executeQuery();
+            int resourceId = rs.getInt("id_to_delete");
 
             // Delete record from resources table
             sql = "DELETE FROM resources WHERE resource_id = ?";
@@ -265,7 +283,7 @@ public class LocalDB {
             sql = "SELECT * FROM quizzes WHERE quiz_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, quizId);
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 record.put("quiz_id", rs.getInt("quiz_id"));
@@ -332,15 +350,11 @@ public class LocalDB {
     public void deleteDictionary(int dictionaryId) {
         try {
             // Retrieve corresponding resource_id for dictionary to delete
-            sql = "SELECT resource_id FROM dictionaries WHERE dictionary_id = ?";
+            sql = "SELECT resource_id AS id_to_delete FROM dictionaries WHERE dictionary_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, dictionaryId);
-            ResultSet rs = stmt.executeQuery(sql);
-            int resourceId = 0;
-
-            while (rs.next()) {
-                resourceId = rs.getInt("resource_id");
-            }
+            ResultSet rs = pstmt.executeQuery();
+            int resourceId = rs.getInt("resource_id");
 
             // Delete record from resources table
             sql = "DELETE FROM resources WHERE resource_id = ?";
@@ -371,7 +385,7 @@ public class LocalDB {
             sql = "SELECT * FROM dictionaries WHERE dictionary_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, dictionaryId);
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 record.put("dictionary_id", rs.getInt("dictionary_id"));
@@ -446,12 +460,8 @@ public class LocalDB {
             sql = "SELECT resource_id FROM flashcards WHERE flashcard_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, flashcardId);
-            ResultSet rs = stmt.executeQuery(sql);
-            int resourceId = 0;
-
-            while (rs.next()) {
-                resourceId = rs.getInt("resource_id");
-            }
+            ResultSet rs = pstmt.executeQuery();
+            int resourceId = rs.getInt("resource_id");
 
             // Delete record from resources table
             sql = "DELETE FROM resources WHERE resource_id = ?";
@@ -476,7 +486,7 @@ public class LocalDB {
             sql = "SELECT * FROM flashcards WHERE flashcard_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, flashcardId);
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 record.put("flashcard_id", rs.getInt("flashcard_id"));
