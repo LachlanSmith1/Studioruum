@@ -39,6 +39,7 @@ create table classruum_scholars(
 create table resources(
   resource_id int NOT NULL auto_increment,
   username varchar(32) NOT NULL,
+  time_updated time,
   primary key(resource_id),
   foreign key(username) references users(username)
 );
@@ -95,6 +96,7 @@ create table comments(
   forum_id int NOT NULL,
   comment_content varchar(255) NOT NULL,
   username varchar(32) NOT NULL,
+  time_updated time,
   primary key(comment_id),
   foreign key(forum_id) references foruums(forum_id),
   foreign key(username) references users(username)

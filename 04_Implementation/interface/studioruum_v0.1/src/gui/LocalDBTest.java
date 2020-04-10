@@ -1,6 +1,8 @@
+package gui;
+
 import java.util.*;
 
-public class DBTest {
+public class LocalDBTest {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         LocalDB db = new LocalDB();
