@@ -2,6 +2,7 @@ package gui;
 
 import java.io.IOException;
 import java.util.*;
+import java.sql.*;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,8 +18,16 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class Controller {
-    
+
+    //Global Variables For All Resources
+    Vector<Vector<String>> flashcards = new Vector<Vector<String>>();
+    Vector<Vector<String>> notes = new Vector<Vector<String>>();
+    Vector<Vector<String>> dictionaries = new Vector<Vector<String>>();
+    Vector<Vector<String>> quizzes = new Vector<Vector<String>>();
+
     public String accountType="";
+    public String currentUser="";
+
     LocalDB locDB = new LocalDB();
 
     //checks if the username exists in the database
@@ -42,6 +51,7 @@ public class Controller {
         String Repassword = Repsswrd.getText();
 
         if (isUnique(username)==true&&password.equals(Repassword)&&password.length()>5&&accountType!=""){
+            currentUser = username;
             goHome(event);
             //create new record and add to database
         }
@@ -71,19 +81,203 @@ public class Controller {
         String password = psswrd.getText();
 
         if(username.length()>5&&password.length()>5){
+            currentUser = username;
             goHome(event);
         }
 
     }
 
+    //Used to Download All Resources Needed For a User to Access the System
+    public void loginSync(ActionEvent event) throws IOException
+    {
+
+        //Establishes a Connection
+        Connection studConnect = null;
+
+        //The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
+        String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
+
+        //Default Master Username and Password From AWS
+        String user = "group40";
+        String password = "zitozito";
+
+        //Attempting to Connect
+        try
+        {
+
+            studConnect = DriverManager.getConnection(host, user, password);
+
+            if(studConnect != null)
+            {
+
+                //Preparing a Statement to Download All Resources of a User
+                PreparedStatement resourceStatement = null;
+
+                try
+                {
+
+                    //Creating a Prepared Statement
+                    resourceStatement = studConnect.prepareStatement("SELECT resource_id, time_updated FROM resources WHERE username = ?;");
+                    resourceStatement.setString(1, currentUser);
+
+                    //Gather the Results of the Select
+                    ResultSet resourceResults = resourceStatement.executeQuery();
+
+                    //Preparing Statements For All Tables of Resources
+                    PreparedStatement flashcardStatement = null;
+                    PreparedStatement noteStatement = null;
+                    PreparedStatement dictionaryStatement = null;
+                    PreparedStatement quizStatement = null;
+
+                    while(resourceResults.next())
+                    {
+
+                        String resourceID = resourceResults.getString("resource_id");
+
+                        //Gathering All Resourced With That ID
+                        flashcardStatement = studConnect.prepareStatement("SELECT * FROM flashcards WHERE resource_id = ?;");
+                        flashcardStatement.setString(1, resourceID);
+
+                        noteStatement = studConnect.prepareStatement("SELECT * FROM notes WHERE resource_id = ?;");
+                        noteStatement.setString(1, resourceID);
+
+                        dictionaryStatement = studConnect.prepareStatement("SELECT * FROM dictionaries WHERE resource_id = ?;");
+                        dictionaryStatement.setString(1, resourceID);
+
+                        quizStatement = studConnect.prepareStatement("SELECT * FROM quizzes WHERE resource_id = ?;");
+                        quizStatement.setString(1, resourceID);
+
+                        //Result Sets For All Where There is a Match
+                        ResultSet flashcardResults = flashcardStatement.executeQuery();
+                        ResultSet noteResults = noteStatement.executeQuery();
+                        ResultSet dictionaryResults = dictionaryStatement.executeQuery();
+                        ResultSet quizResults = quizStatement.executeQuery();
+
+                        if(flashcardResults.next() != false)
+                        {
+                            do
+                            {
+
+                                //ADD STUFF TO THE 2D VECTOR
+
+                            }
+                            while (flashcardResults.next());
+                        }
+
+                        if(noteResults.next() != false)
+                        {
+                            do
+                            {
+
+                                //ADD STUFF TO THE 2D VECTOR
+
+                            }
+                            while (noteResults.next());
+                        }
+
+                        if(dictionaryResults.next() != false)
+                        {
+                            do
+                            {
+
+                                //ADD STUFF TO THE 2D VECTOR
+
+                            }
+                            while (dictionaryResults.next());
+                        }
+
+                        if(quizResults.next() != false)
+                        {
+                            do
+                            {
+
+                                //ADD STUFF TO THE 2D VECTOR
+
+                            }
+                            while (quizResults.next());
+                        }
+
+                    }
+
+
+
+
+                }
+                catch (SQLException ex)
+                {
+
+                    System.out.println("Error Connecting: " + ex);
+
+                }
+                finally
+                {
+
+                    try
+                    {
+
+                        resourceStatement.close();
+
+                    }
+                    catch (SQLException ex)
+                    {
+
+                        System.out.println("Error Closing: " + ex);
+
+                    }
+
+                }
+
+            }
+
+        }
+        catch (SQLException ex)
+        {
+
+            System.out.println("An Error Occured When Connecting to the Database.");
+            ex.printStackTrace();
+
+        }
+        finally
+        {
+
+            //Close The Connection When Finished
+            if (studConnect != null)
+            {
+
+                try
+                {
+
+                    studConnect.close();
+
+                }
+                catch (SQLException ex)
+                {
+
+                    ex.printStackTrace();
+
+                }
+
+            }
+
+        }
+
+
+    }
+
     // navigation buttons
-    public void goHome(ActionEvent event) throws IOException{
+    public void goHome(ActionEvent event) throws IOException
+    {
+
+        //Used to Gather All Resources
+        loginSync(event);
+
         Parent dest = FXMLLoader.load(getClass().getResource("home.fxml"));
         Scene destScene = new Scene(dest);
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
     }
 
     public void goFlashcard(ActionEvent event) throws IOException{
