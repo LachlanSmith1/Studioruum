@@ -2,6 +2,7 @@ package gui;
 
 import java.io.IOException;
 import java.util.*;
+import java.sql.*;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,9 +17,12 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-public class Controller {
+public class Controller 
+{
     
     public String accountType="";
+	public String currentUser="";
+	
     LocalDB locDB = new LocalDB();
 
     //checks if the username exists in the database
@@ -73,6 +77,262 @@ public class Controller {
         if(username.length()>5&&password.length()>5){
             goHome(event);
         }
+
+    }
+
+	//Used to Download All Resources Needed For a User to Access the System
+    public void loginSync(ActionEvent event) throws IOException
+    {
+
+        //Establishes an ONLINE Connection
+        Connection onlineConnect = null;
+
+        //The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
+        String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
+
+        //Default Master Username and Password From AWS
+        String user = "group40";
+        String password = "zitozito";
+
+        //Attempting to Connect
+        try
+        {
+
+            onlineConnect = DriverManager.getConnection(host, user, password);
+
+            if(onlineConnect != null)
+            {
+
+                //Preparing a Statement to Download All Resources of a User
+                PreparedStatement resourceStatement = null;
+
+                try
+                {
+
+                    //Creating a Prepared Statement
+                    resourceStatement = onlineConnect.prepareStatement("SELECT resource_id, time_updated FROM resources WHERE username = ?;");
+                    resourceStatement.setString(1, currentUser);
+
+                    //Gather the Results of the Select
+                    ResultSet resourceResults = resourceStatement.executeQuery();
+
+                    //Preparing Statements For All Tables of Resources
+                    PreparedStatement flashcardStatement = null;
+                    PreparedStatement noteStatement = null;
+                    PreparedStatement dictionaryStatement = null;
+                    PreparedStatement quizStatement = null;
+
+                    while(resourceResults.next())
+                    {
+
+                        String resourceID = resourceResults.getString("resource_id");
+
+                        //Gathering All Resources With That ID
+                        flashcardStatement = onlineConnect.prepareStatement("SELECT * FROM flashcards WHERE resource_id = ?;");
+                        flashcardStatement.setString(1, resourceID);
+
+                        noteStatement = onlineConnect.prepareStatement("SELECT * FROM notes WHERE resource_id = ?;");
+                        noteStatement.setString(1, resourceID);
+
+                        dictionaryStatement = onlineConnect.prepareStatement("SELECT * FROM dictionaries WHERE resource_id = ?;");
+                        dictionaryStatement.setString(1, resourceID);
+
+                        quizStatement = onlineConnect.prepareStatement("SELECT * FROM quizzes WHERE resource_id = ?;");
+                        quizStatement.setString(1, resourceID);
+
+                        //Result Sets For All Where There is a Match
+                        ResultSet flashcardResults = flashcardStatement.executeQuery();
+                        ResultSet noteResults = noteStatement.executeQuery();
+                        ResultSet dictionaryResults = dictionaryStatement.executeQuery();
+                        ResultSet quizResults = quizStatement.executeQuery();
+
+                        //Establishes an OFFLINE Connection
+                        Connection offlineConnect = null;
+
+                        try
+                        {
+                            Class.forName("org.sqlite.JDBC");
+                            offlineConnect = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
+                        }
+                        catch(Exception ex)
+                        {
+                            System.out.println("Error Connecting to Offline DB: " + ex.getMessage());
+                        }
+
+                        //Insert the Resource ID If Not Present
+                        int resource_id = resourceResults.getInt("resource_id");
+
+                        PreparedStatement pstmt = null;
+
+                        String rsrcSQL = "REPLACE INTO resources VALUES (?)";
+                        pstmt = offlineConnect.prepareStatement(rsrcSQL);
+                        pstmt.setInt(1, resource_id);
+                        ResultSet rsrcResult = pstmt.executeQuery(rsrcSQL);
+
+                        if(flashcardResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int flashcard_id = flashcardResults.getInt("flashcard_id");
+                                int dictionary_id = flashcardResults.getInt("dictionary_id");
+                                int quiz_id = flashcardResults.getInt("quiz_id");
+
+                                String front_content = flashcardResults.getString("front_content");
+                                String back_content = flashcardResults.getString("back_content");
+
+                                //THEN UPLOAD
+
+                                String flshSQL = "REPLACE INTO flashcards VALUES (?, ?, ?, ?, ?, ?)";
+                                pstmt = offlineConnect.prepareStatement(flshSQL);
+                                pstmt.setInt(1, flashcard_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setInt(3, dictionary_id);
+                                pstmt.setInt(4, quiz_id);
+                                pstmt.setString(5, front_content);
+                                pstmt.setString(6, back_content);
+
+                                ResultSet flshResult = pstmt.executeQuery(flshSQL);
+
+                            }
+                            while (flashcardResults.next());
+                        }
+
+                        if(noteResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int note_id = noteResults.getInt("note_id");
+
+                                String note_title = noteResults.getString("note_title");
+                                String note_content = noteResults.getString("note_content");
+
+                                //THEN UPLOAD
+
+                                String noteSQL = "REPLACE INTO notes VALUES (?, ?, ?, ?)";
+                                pstmt = offlineConnect.prepareStatement(noteSQL);
+                                pstmt.setInt(1, note_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setString(3, note_title);
+                                pstmt.setString(4, note_content);
+
+                                ResultSet noteResult = pstmt.executeQuery(noteSQL);
+
+                            }
+                            while (noteResults.next());
+                        }
+
+                        if(dictionaryResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int dictionary_id = dictionaryResults.getInt("dictionary_id");
+
+                                String dictionary_name = dictionaryResults.getString("dictionary_name");
+
+                                //THEN UPLOAD
+
+                                String dctnSQL = "REPLACE INTO dictionaries VALUES (?, ?, ?)";
+                                pstmt = offlineConnect.prepareStatement(dctnSQL);
+                                pstmt.setInt(1, dictionary_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setString(3, dictionary_name);
+
+                                ResultSet dictResult = pstmt.executeQuery(dctnSQL);
+
+                            }
+                            while (dictionaryResults.next());
+                        }
+
+                        if(quizResults.next() != false)
+                        {
+                            do
+                                {
+
+                                int quiz_id = quizResults.getInt("quiz_id");
+
+                                String quiz_name = quizResults.getString("quiz_name");
+                                String quiz_topic = quizResults.getString("quiz_topic");
+
+                                //THEN UPLOAD
+
+                                String quizSQL = "REPLACE INTO quizzes VALUES (?, ?, ?, ?)";
+                                pstmt = offlineConnect.prepareStatement(quizSQL);
+                                pstmt.setInt(1, quiz_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setString(3, quiz_name);
+                                 pstmt.setString(4, quiz_topic);
+
+                                ResultSet quizResult = pstmt.executeQuery(quizSQL);
+
+                            }
+                            while (quizResults.next());
+                        }
+
+                    }
+
+                }
+                catch (SQLException ex)
+                {
+
+                    System.out.println("Error Connecting: " + ex);
+
+                }
+                finally
+                {
+
+                    try
+                    {
+
+                        resourceStatement.close();
+
+                    }
+                    catch (SQLException ex)
+                    {
+
+                        System.out.println("Error Closing: " + ex);
+
+                    }
+
+                }
+
+            }
+
+        }
+        catch (SQLException ex)
+        {
+
+            System.out.println("An Error Occurred When Connecting to the Database.");
+            ex.printStackTrace();
+
+        }
+        finally
+        {
+
+            //Close The Connection When Finished
+            if (onlineConnect != null)
+            {
+
+                try
+                {
+
+                    onlineConnect.close();
+                    onlineConnect.close();
+
+                }
+                catch (SQLException ex)
+                {
+
+                    ex.printStackTrace();
+
+                }
+
+            }
+
+        }
+
 
     }
 
