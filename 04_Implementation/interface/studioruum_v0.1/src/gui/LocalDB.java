@@ -23,7 +23,7 @@ public class LocalDB {
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
-            System.out.println("Connected to database");
+            System.out.println("Refreshed connection");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -33,6 +33,7 @@ public class LocalDB {
         List<Hashtable> resourceList = new ArrayList<Hashtable>();
 
         try {
+            refreshConnection();
             stmt = conn.createStatement();
             sql = "SELECT * FROM resources";
             ResultSet rs = stmt.executeQuery(sql);
@@ -55,6 +56,7 @@ public class LocalDB {
     // No values to be passed as params, as resource_id auto-increments
     public void saveResource() {
         try {
+            refreshConnection();
             stmt = conn.createStatement();
             sql = "INSERT INTO resources VALUES (null)";
             stmt.execute(sql);
@@ -67,6 +69,7 @@ public class LocalDB {
     // Needs a resource_id as a parameter to locate record to delete
     public void deleteResource(int resourceId) {
         try {
+            refreshConnection();
             sql = "DELETE FROM resources WHERE resource_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, resourceId);
@@ -81,6 +84,7 @@ public class LocalDB {
         List<Note> noteList = new ArrayList<>();
 
         try {
+            refreshConnection();
             stmt = conn.createStatement();
             sql = "SELECT * FROM notes";
             ResultSet rs = stmt.executeQuery(sql);
@@ -107,6 +111,8 @@ public class LocalDB {
     // Saves note record in local db
     public void saveNote(String noteTitle, String noteContent) {
         try {
+            refreshConnection();
+
             // Save as resource and retrieve automatically generated id value
             saveResource();
             stmt = conn.createStatement();
@@ -133,6 +139,8 @@ public class LocalDB {
     // Deletes note record from local db
     public void deleteNote(int noteId) {
         try {
+            refreshConnection();
+
             // Retrieve corresponding resource_id for note to delete
             sql = "SELECT resource_id AS id_to_delete FROM notes WHERE note_id = ?";
             pstmt = conn.prepareStatement(sql);
@@ -159,6 +167,7 @@ public class LocalDB {
     // Updates a note record from local db
     public void updateNote(int noteId, String noteTitle, String noteContent) {
         try {
+            refreshConnection();
             sql = "UPDATE notes SET note_title = ?, note_content = ? WHERE note_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, noteTitle);
@@ -176,6 +185,7 @@ public class LocalDB {
         Hashtable record = new Hashtable();
 
         try {
+            refreshConnection();
             sql = "SELECT * FROM notes WHERE note_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, noteId);
@@ -199,6 +209,7 @@ public class LocalDB {
         List<Hashtable> quizList = new ArrayList<Hashtable>();
 
         try {
+            refreshConnection();
             stmt = conn.createStatement();
             sql = "SELECT * FROM quizzes";
             ResultSet rs = stmt.executeQuery(sql);
@@ -222,6 +233,8 @@ public class LocalDB {
 
     public void saveQuiz(String quizName, String quizTopic) {
         try {
+            refreshConnection();
+
             // Save as resource and retrieve automatically generated id value
             saveResource();
             stmt = conn.createStatement();
@@ -247,6 +260,8 @@ public class LocalDB {
 
     public void deleteQuiz(int quizId) {
         try {
+            refreshConnection();
+
             // Retrieve corresponding resource_id for quiz to delete
             sql = "SELECT resource_id AS id_to_delete FROM quizzes WHERE quiz_id = ?";
             pstmt = conn.prepareStatement(sql);
@@ -280,6 +295,8 @@ public class LocalDB {
         Hashtable record = new Hashtable();
 
         try {
+            refreshConnection();
+
             sql = "SELECT * FROM quizzes WHERE quiz_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, quizId);
@@ -298,22 +315,24 @@ public class LocalDB {
         return record;
     }
 
-    // Returns list of hashtable containing all dictionaries in the local db
+    // Now returns list of Dictionary containing all dictionaries in the local db
     public List allDictionaries() {
-        List<Hashtable> dictionaryList = new ArrayList<Hashtable>();
+        List<Dictionary> dictionaryList = new ArrayList<Dictionary>();
 
         try {
+            refreshConnection();
             stmt = conn.createStatement();
             sql = "SELECT * FROM dictionaries";
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                Hashtable record = new Hashtable();
+                // Fetch all values of current record
+                int dictionaryId = rs.getInt("dictionary_id");
+                int resourceId = rs.getInt("resource_id");
+                String dictionaryName = rs.getString("dictionary_name");
 
-                record.put("dictionary_id", rs.getInt("dictionary_id"));
-                record.put("resource_id", rs.getInt("resource_id"));
-                record.put("dictionary_name", rs.getString("dictionary_name"));
-
+                // Create Dictionary object and add to list
+                Dictionary record = new Dictionary(dictionaryId, resourceId, dictionaryName);
                 dictionaryList.add(record);
             }
         } catch (Exception e) {
@@ -325,6 +344,8 @@ public class LocalDB {
 
     public void saveDictionary(String dictionaryName) {
         try {
+            refreshConnection();
+
             // Save as resource and retrieve automatically generated id value
             saveResource();
             stmt = conn.createStatement();
@@ -349,12 +370,14 @@ public class LocalDB {
 
     public void deleteDictionary(int dictionaryId) {
         try {
+            refreshConnection();
+
             // Retrieve corresponding resource_id for dictionary to delete
             sql = "SELECT resource_id AS id_to_delete FROM dictionaries WHERE dictionary_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, dictionaryId);
             ResultSet rs = pstmt.executeQuery();
-            int resourceId = rs.getInt("resource_id");
+            int resourceId = rs.getInt("id_to_delete");
 
             // Delete record from resources table
             sql = "DELETE FROM resources WHERE resource_id = ?";
@@ -382,6 +405,7 @@ public class LocalDB {
         Hashtable record = new Hashtable();
 
         try {
+            refreshConnection();
             sql = "SELECT * FROM dictionaries WHERE dictionary_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, dictionaryId);
@@ -399,26 +423,52 @@ public class LocalDB {
         return record;
     }
 
-    // Returns list of hashtable containing all flashcards in the local db
-    public List allFlashcards() {
-        List<Hashtable> flashcardList = new ArrayList<Hashtable>();
+    // Updates a dictionary record from local db
+    public void updateDictionary(int dictId, String dictName) {
+        try {
+            refreshConnection();
+            sql = "UPDATE dictionaries SET dictionary_name = ? WHERE dictionary_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, dictName);
+            pstmt.setInt(2, dictId);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("updateNote Error: " + e.getMessage());
+        }
+    }
+
+    // Returns list of Flashcard containing all flashcards in dictionary passed as param
+    public List allFlashcards(int dictID) {
+        List<Flashcard> flashcardList = new ArrayList<Flashcard>();
 
         try {
-            stmt = conn.createStatement();
-            sql = "SELECT * FROM dictionaries";
-            ResultSet rs = stmt.executeQuery(sql);
+            refreshConnection();
+            sql = "SELECT * FROM flashcards WHERE dictionary_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, dictID);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                Hashtable record = new Hashtable();
+                // Fetch all values of current record
+                int flashcardId = rs.getInt("flashcard_id");
+                int resourceId = rs.getInt("resource_id");
+                int dictionaryId = rs.getInt("dictionary_id");
+                int quizId = rs.getInt("quiz_id");
+                String frontContent = rs.getString("front_content");
+                String backContent = rs.getString("back_content");
 
-                record.put("flashcard_id", rs.getInt("flashcard_id"));
-                record.put("resource_id", rs.getInt("resource_id"));
-                record.put("dictionary_id", rs.getInt("dictionary_id"));
-                record.put("quiz_id", rs.getInt("quiz_id"));
-                record.put("front_content", rs.getString("front_content"));
-                record.put("back_content", rs.getString("back_content"));
+                // Create Flashcard object and add to list
+                Flashcard record;
 
-                flashcardList.add(record);
+                if (quizId != 0) {
+                    record = new Flashcard(flashcardId, resourceId, dictionaryId, quizId, frontContent, backContent);
+                    flashcardList.add(record);
+                }
+
+                else {
+                    record = new Flashcard(flashcardId, resourceId, dictionaryId, frontContent, backContent);
+                    flashcardList.add(record);
+                }
             }
         } catch (Exception e) {
             System.out.println("allFlashcards Error: " + e.getMessage());
@@ -427,8 +477,11 @@ public class LocalDB {
         return flashcardList;
     }
 
+    // Saves flashcard WITH quiz_id in local db
     public void saveFlashcard(int dictionaryId, int quizId, String frontContent, String backContent) {
         try {
+            refreshConnection();
+
             // Save as resource and retrieve automatically generated id value
             saveResource();
             stmt = conn.createStatement();
@@ -454,14 +507,45 @@ public class LocalDB {
         }
     }
 
+    // Saves flashcard W/O quiz_id in local_db
+    public void saveFlashcard(int dictionaryId, String frontContent, String backContent) {
+        try {
+            refreshConnection();
+
+            // Save as resource and retrieve automatically generated id value
+            saveResource();
+            stmt = conn.createStatement();
+            sql = "SELECT MAX(resource_id) AS last_id FROM resources";
+            ResultSet rs = stmt.executeQuery(sql);
+            int resourceId = 0;
+
+            while (rs.next()) {
+                resourceId = rs.getInt("last_id");
+            }
+
+            // Save as dictionary using retrieved resource_id
+            sql = "INSERT INTO flashcards(resource_id, dictionary_id, front_content, back_content) VALUES(?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, resourceId);
+            pstmt.setInt(2, dictionaryId);
+            pstmt.setString(3, frontContent);
+            pstmt.setString(4, backContent);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("saveFlashcard (w/o quiz_id) Error: " + e.getMessage());
+        }
+    }
+
     public void deleteFlashcard(int flashcardId) {
         try {
+            refreshConnection();
+
             // Retrieve corresponding resource_id for flashcard to delete
-            sql = "SELECT resource_id FROM flashcards WHERE flashcard_id = ?";
+            sql = "SELECT resource_id AS id_to_delete FROM flashcards WHERE flashcard_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, flashcardId);
             ResultSet rs = pstmt.executeQuery();
-            int resourceId = rs.getInt("resource_id");
+            int resourceId = rs.getInt("id_to_delete");
 
             // Delete record from resources table
             sql = "DELETE FROM resources WHERE resource_id = ?";
@@ -479,22 +563,55 @@ public class LocalDB {
         }
     }
 
-    public Hashtable retrieveFlashcard(int flashcardId) {
-        Hashtable record = new Hashtable();
+    // Updates a flashcard record from local db
+    public void updateFlashcard(int flashcardId, String frontContent, String backContent) {
+        try {
+            refreshConnection();
+            sql = "UPDATE flashcards SET front_content = ?, back_content = ? WHERE flashcard_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, frontContent);
+            pstmt.setString(2, backContent);
+            pstmt.setInt(3, flashcardId);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("updateFlashcard Error: " + e.getMessage());
+        }
+    }
+
+    // Now returns object of Flashcard
+    public Flashcard retrieveFlashcard(int flashcardId) {
+        Flashcard record = new Flashcard(0, 0, 0, 0, "", "");
 
         try {
+            refreshConnection();
             sql = "SELECT * FROM flashcards WHERE flashcard_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, flashcardId);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                record.put("flashcard_id", rs.getInt("flashcard_id"));
-                record.put("resource_id", rs.getInt("resource_id"));
-                record.put("dictionary_id", rs.getInt("dictionary_id"));
-                record.put("quiz_id", rs.getInt("quiz_id"));
-                record.put("front_content", rs.getString("front_content"));
-                record.put("back_content", rs.getString("back_content"));
+                int resourceId = rs.getInt("resource_id");
+                int dictionaryId = rs.getInt("dictionary_id");
+                int quizId = rs.getInt("quiz_id");
+                String frontContent = rs.getString("front_content");
+                String backContent = rs.getString("back_content");
+
+                if (quizId != 0) {
+                    record.setFID(flashcardId);
+                    record.resourceID = resourceId;
+                    record.setDict(dictionaryId);
+                    record.setQuiz(quizId);
+                    record.setFront(frontContent);
+                    record.setBack(backContent);
+                }
+
+                else {
+                    record.setFID(flashcardId);
+                    record.resourceID = resourceId;
+                    record.setDict(dictionaryId);
+                    record.setFront(frontContent);
+                    record.setBack(backContent);
+                }
             }
         } catch (Exception e) {
             System.out.println("retrieveFlashcard Error: " + e.getMessage());
