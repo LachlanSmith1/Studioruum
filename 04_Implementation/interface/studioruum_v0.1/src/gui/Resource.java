@@ -15,36 +15,22 @@ public class Resource
 	
 	//the name given to the resource (not necessary)
 	public String resourceName;
-	
+
 	//access level, which is private by default
 	public String privacyLevel;
 	
 	// added id and name as constructor params
 	public Resource(int id, String name)
 	{
-		
-		//DUMMY DATA FOR RESOURCES
-		
-		//resourceID = 000001;
-		//userID = 101010;
-		
-		//ACTUAL DATA FOR ALL RESOURCES
-		
 		resourceName = name;
 		resourceID = id;
-		//resourceType = "null";
-		//privacyLevel = "private";
-		
 	}
-	
-	/*public static void main(String[] args)
+
+	// Overloaded constructor used by Flashcard (no need for title)
+	public Resource(int id)
 	{
-		
-		Resource exResource = new Resource("exResource");
-		
-		exResource.writeResource();
-		
-	}*/
+		resourceID = id;
+	}
 
 	// Getter and setter for resourceName
 	public String getTitle() {

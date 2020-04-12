@@ -21,7 +21,11 @@
    <children>
       <HBox prefHeight="58.0" prefWidth="234.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#goHome" text="home" />
+            <Button mnemonicParsing="false" onAction="#goHome" text="Home">
+             <HBox.margin>
+                 <Insets left="30.0" top="25.0" />
+             </HBox.margin>
+            </Button>
          </children>
       </HBox>
       <VBox prefHeight="152.0" prefWidth="191.0" GridPane.columnIndex="1">
@@ -57,7 +61,7 @@
       </VBox>
       <TextArea fx:id="noteContent" blendMode="DARKEN" editable="false" prefHeight="150.0" prefWidth="230.0" promptText="The content of the note goes here..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <TextField fx:id="noteTitle" editable="false" promptText="The title of the note goes here...." GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <ComboBox fx:id="noteDrpDwn" onAction="#displayNote" prefWidth="150.0" promptText="Select a note..." GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+      <ComboBox fx:id="noteDrpDwn" onAction="#displayNote" prefWidth="120.0" promptText="Select a note" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
       <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
          <children>
             <Button fx:id="updateNote" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#updateNote" text="Save" visible="false">

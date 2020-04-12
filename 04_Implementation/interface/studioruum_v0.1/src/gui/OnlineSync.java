@@ -17,9 +17,10 @@
 	
 */
 
-package gui;
 
 //Import Statements For JDBC and Etc.
+package gui;
+
 import java.util.Properties;
 import java.sql.*;
 
