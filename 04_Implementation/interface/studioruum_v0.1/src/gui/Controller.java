@@ -13,6 +13,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -26,18 +27,24 @@ public class Controller
     LocalDB locDB = new LocalDB();
 
     //checks if the username exists in the database
-    public Boolean isUnique(String username){
+    public Boolean isUnique(String username)
+    {
+
         Boolean unique=true;
         //go through user table
         //if username==anything in database
         //unique=false
         return unique;
+
     }
 
     //checks if the username and password combo used for sign up is valid
-    public void validSignUp(ActionEvent event) throws IOException{
+    public void validSignUp(ActionEvent event) throws IOException
+    {
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
+
         TextField uname = (TextField) scene.lookup("#logintxt");
         TextField psswrd = (TextField) scene.lookup("#passwordtxt");
         TextField Repsswrd = (TextField) scene.lookup("#Repasswordtxt");
@@ -45,26 +52,37 @@ public class Controller
         String password = psswrd.getText();
         String Repassword = Repsswrd.getText();
 
-        if (isUnique(username)==true&&password.equals(Repassword)&&password.length()>5&&accountType!=""){
+        if (isUnique(username)==true&&password.equals(Repassword)&&password.length()>5&&accountType!="")
+        {
+
+            currentUser = username;
             goHome(event);
             //create new record and add to database
+
         }
+
     }
     
     
 
 // hyperlink on the log in page that allows user to register
-    public void signUplink(ActionEvent event) throws IOException{
+    public void signUplink(ActionEvent event) throws IOException
+    {
+
         Parent signUp = FXMLLoader.load(getClass().getResource("signup.fxml"));
         Scene signUpScene = new Scene(signUp);
+
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(signUpScene);
         window.show();
+
     }
 
     // validate user account info
-    public void validNamePassword(ActionEvent event) throws IOException{
+    public void validNamePassword(ActionEvent event) throws IOException
+    {
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
 
@@ -74,8 +92,12 @@ public class Controller
         String username = uname.getText();
         String password = psswrd.getText();
 
-        if(username.length()>5&&password.length()>5){
+        if(username.length()>5&&password.length()>5)
+        {
+
+            currentUser = username;
             goHome(event);
+
         }
 
     }
@@ -333,20 +355,25 @@ public class Controller
 
         }
 
-
     }
 
     // navigation buttons
-    public void goHome(ActionEvent event) throws IOException{
+    public void goHome(ActionEvent event) throws IOException
+    {
+
         Parent dest = FXMLLoader.load(getClass().getResource("home.fxml"));
         Scene destScene = new Scene(dest);
+
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
     }
 
-    public void goFlashcard(ActionEvent event) throws IOException{
+    public void goFlashcard(ActionEvent event) throws IOException
+    {
+
         // Get Stage info and set destination Scene
         Parent dest = FXMLLoader.load(getClass().getResource("view_flashcard.fxml"));
         Scene destScene = new Scene(dest);
@@ -360,7 +387,8 @@ public class Controller
         dictDropDown.setItems(observableDicts);
 
         // Updates item in ComboBox to show only their title instead of their full instance
-        Callback<ListView<Dictionary>, ListCell<Dictionary>> factory = lv -> new ListCell<Dictionary>() {
+        Callback<ListView<Dictionary>, ListCell<Dictionary>> factory = lv -> new ListCell<Dictionary>()
+        {
 
             @Override
             protected void updateItem(Dictionary item, boolean empty) {
@@ -375,10 +403,13 @@ public class Controller
 
         // Finally display window
         window.show();
+
     }
 
     // Populates flashcard combo box after user selects dictionary
-    public void populateFlash(ActionEvent event) throws IOException {
+    public void populateFlash(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -400,13 +431,16 @@ public class Controller
         List<Flashcard> flashcards = locDB.allFlashcards(dictId);
 
         // Proceed with operations if flashcards exist for current dictionary
-        if (!flashcards.isEmpty()) {
+        if (!flashcards.isEmpty())
+        {
+
             ObservableList<Flashcard> observableFlashs = FXCollections.observableList(flashcards);
             flashDropDown.setItems(observableFlashs);
             flashDropDown.setVisible(true);
 
             // Updates item in ComboBox to show only their title instead of their full instance
-            Callback<ListView<Flashcard>, ListCell<Flashcard>> factory = lv -> new ListCell<Flashcard>() {
+            Callback<ListView<Flashcard>, ListCell<Flashcard>> factory = lv -> new ListCell<Flashcard>()
+            {
 
                 @Override
                 protected void updateItem(Flashcard item, boolean empty) {
@@ -435,10 +469,13 @@ public class Controller
             nextFlash.setDisable(false);
             Button flipFlash = (Button) scene.lookup("#flipFlash");
             flipFlash.setDisable(false);
+
         }
 
         // If no flashcards for current dictionary, alert user
-        else {
+        else
+        {
+
             flashContent.setText("");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("No Flashcards");
@@ -446,11 +483,14 @@ public class Controller
             alert.setContentText("There are no flashcards in the current dictionary. You can add some by clicking the 'New Flashcard' button");
 
             alert.showAndWait();
+
         }
     }
 
     // Displays flashcard front content after user selects flashcard
-    public void displayFlash(ActionEvent event) throws IOException {
+    public void displayFlash(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -468,26 +508,37 @@ public class Controller
         flipFlash.setDisable(false);
 
         // Make "Prev" button enabled if not first flashcard
-        if (flashDropDown.getSelectionModel().getSelectedIndex() != 0) {
+        if (flashDropDown.getSelectionModel().getSelectedIndex() != 0)
+        {
+
             Button prevFlash = (Button) scene.lookup("#prevFlash");
             prevFlash.setDisable(false);
-        } else {
+
+        }
+        else
+        {
             Button prevFlash = (Button) scene.lookup("#prevFlash");
             prevFlash.setDisable(true);
         }
 
         // Make "Next" button enabled if not last flashcard
-        if (flashDropDown.getSelectionModel().getSelectedIndex() != flashDropDown.getItems().size() - 1) {
+        if (flashDropDown.getSelectionModel().getSelectedIndex() != flashDropDown.getItems().size() - 1)
+        {
             Button nextFlash = (Button) scene.lookup("#nextFlash");
             nextFlash.setDisable(false);
-        } else {
+        }
+        else
+        {
             Button nextFlash = (Button) scene.lookup("#nextFlash");
             nextFlash.setDisable(true);
         }
+
     }
 
     // Flips flashcard content
-    public void flipFlash(ActionEvent event) throws IOException {
+    public void flipFlash(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -500,17 +551,20 @@ public class Controller
         Flashcard selected = (Flashcard) flashDropDown.getSelectionModel().getSelectedItem();
 
         // Flip to back content if front and vice-versa
-        if (flashContent.getText().equals(selected.frontProperty().getValue())) {
+        if (flashContent.getText().equals(selected.frontProperty().getValue()))
+        {
             flashContent.setText(selected.backProperty().getValue());
         }
-
-        else if (flashContent.getText().equals(selected.backProperty().getValue())) {
+        else if (flashContent.getText().equals(selected.backProperty().getValue()))
+        {
             flashContent.setText(selected.frontProperty().getValue());
         }
+
     }
 
     // Adds functionality to "Prev" button in flashcards page
-    public void prevFlash(ActionEvent event) throws IOException{
+    public void prevFlash(ActionEvent event) throws IOException
+    {
         // Get Stage and Scene info
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -522,24 +576,32 @@ public class Controller
         TextArea flashContent = (TextArea) scene.lookup("#flashContent");
 
         // Set selected flashcard and its content to prev flashcard if not second to first
-        if (flashDropDown.getSelectionModel().getSelectedIndex() > 1) {
+        if (flashDropDown.getSelectionModel().getSelectedIndex() > 1)
+        {
+
             flashDropDown.getSelectionModel().select(flashDropDown.getSelectionModel().getSelectedIndex() - 1);
             Flashcard selected = (Flashcard) flashDropDown.getSelectionModel().getSelectedItem();
             flashContent.setText(selected.frontProperty().getValue());
+
         }
 
         // Otherwise, set selected flashcard and its content to prev flashcard, disable "Prev" button
-        else if (flashDropDown.getSelectionModel().getSelectedIndex() == 1) {
+        else if (flashDropDown.getSelectionModel().getSelectedIndex() == 1)
+        {
+
             flashDropDown.getSelectionModel().selectFirst();
             Flashcard selected = (Flashcard) flashDropDown.getSelectionModel().getSelectedItem();
             flashContent.setText(selected.frontProperty().getValue());
             Button prevFlash = (Button) scene.lookup("#prevFlash");
             prevFlash.setDisable(true);
+
         }
     }
 
     // Adds functionality to "Next" button in flashcards page
-    public void nextFlash(ActionEvent event) throws IOException{
+    public void nextFlash(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -551,24 +613,33 @@ public class Controller
         TextArea flashContent = (TextArea) scene.lookup("#flashContent");
 
         // Set selected flashcard and its content to next flashcard if not second to last
-        if (flashDropDown.getSelectionModel().getSelectedIndex() < flashDropDown.getItems().size() - 2) {
+        if (flashDropDown.getSelectionModel().getSelectedIndex() < flashDropDown.getItems().size() - 2)
+        {
+
             flashDropDown.getSelectionModel().select(flashDropDown.getSelectionModel().getSelectedIndex() + 1);
             Flashcard selected = (Flashcard) flashDropDown.getSelectionModel().getSelectedItem();
             flashContent.setText(selected.frontProperty().getValue());
+
         }
 
         // Otherwise, set selected flashcard and its content to next flashcard, disable "Next" button
-        else if (flashDropDown.getSelectionModel().getSelectedIndex() == flashDropDown.getItems().size() - 2) {
+        else if (flashDropDown.getSelectionModel().getSelectedIndex() == flashDropDown.getItems().size() - 2)
+        {
+
             flashDropDown.getSelectionModel().selectLast();
             Flashcard selected = (Flashcard) flashDropDown.getSelectionModel().getSelectedItem();
             flashContent.setText(selected.frontProperty().getValue());
             Button nextFlash = (Button) scene.lookup("#nextFlash");
             nextFlash.setDisable(true);
+
         }
+
     }
 
     // Deletes currently selected Flashcard from local DB
-    public void deleteFlash(ActionEvent event) throws IOException{
+    public void deleteFlash(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -588,7 +659,9 @@ public class Controller
         Optional<ButtonType> result = alert.showAndWait();
 
         // Delete flashcard in case user clicks "OK", skip to next flashcard
-        if (result.get() == ButtonType.OK) {
+        if (result.get() == ButtonType.OK)
+        {
+
             // Delete flashcard from local db
             locDB.deleteFlashcard(selected.getFID());
 
@@ -597,34 +670,48 @@ public class Controller
             flashDropDown.getItems().remove(selectedIndex);
 
             // If there are still flashcards in dictionary, skip to next and refresh items, else alert user
-            if (flashDropDown.getItems().size() > 0) {
+            if (flashDropDown.getItems().size() > 0)
+            {
 
 
                 // Set selected flashcard and its content to next flashcard if not second to last
-                if (selectedIndex < flashDropDown.getItems().size() - 2) {
+                if (selectedIndex < flashDropDown.getItems().size() - 2)
+                {
+
                     flashDropDown.getSelectionModel().select(selectedIndex + 1);
                     selected = (Flashcard) flashDropDown.getSelectionModel().getSelectedItem();
                     flashContent.setText(selected.frontProperty().getValue());
+
                 }
 
                 // If second to last, set selected flashcard and its content to next flashcard, disable "Next" button
-                else if (selectedIndex == flashDropDown.getItems().size() - 2) {
+                else if (selectedIndex == flashDropDown.getItems().size() - 2)
+                {
+
                     flashDropDown.getSelectionModel().selectLast();
                     selected = (Flashcard) flashDropDown.getSelectionModel().getSelectedItem();
                     flashContent.setText(selected.frontProperty().getValue());
                     Button nextFlash = (Button) scene.lookup("#nextFlash");
                     nextFlash.setDisable(true);
+
                 }
 
                 // If last, set selected flashcard and its content to next flashcard, disable "Next" button
-                else if (selectedIndex == flashDropDown.getItems().size() - 1) {
+                else if (selectedIndex == flashDropDown.getItems().size() - 1)
+                {
+
                     flashDropDown.getSelectionModel().select(selectedIndex - 1);
                     selected = (Flashcard) flashDropDown.getSelectionModel().getSelectedItem();
                     flashContent.setText(selected.frontProperty().getValue());
                     Button nextFlash = (Button) scene.lookup("#nextFlash");
                     nextFlash.setDisable(true);
+
                 }
-            } else {
+
+            }
+            else
+            {
+
                 flashContent.setText("");
                 flashDropDown.setVisible(false);
                 Button editFlash = (Button) scene.lookup("#editFlash");
@@ -637,12 +724,15 @@ public class Controller
                 alert.setContentText("There are no flashcards in the current dictionary. You can add some by clicking the 'New Flashcard' button");
 
                 alert.showAndWait();
+
             }
         }
     }
 
     // Takes user to create_flashcard page, specifies operation to be executed
-    public void newFlash(ActionEvent event) throws IOException{
+    public void newFlash(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -665,10 +755,13 @@ public class Controller
 
         // Finally display window
         window.show();
+
     }
 
     // Takes user to create_flashcard page, specifies operation to be executed and populates text areas
-    public void alterFlash(ActionEvent event) throws IOException{
+    public void alterFlash(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -700,10 +793,13 @@ public class Controller
 
         // Finally display window
         window.show();
+
     }
 
     // Adds functionality to "Save" button in create_flashcard page
-    public void saveFlash(ActionEvent event) throws IOException{
+    public void saveFlash(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -715,7 +811,9 @@ public class Controller
         Label opLabel = (Label) scene.lookup("#flashOp");
         String operation = opLabel.getText();
 
-        if (operation.equals("new")) {
+        if (operation.equals("new"))
+        {
+
             // Get dictionary_id of flashcard to save
             Label dictLabel = (Label) scene.lookup("#dictId");
             dictId = Integer.parseInt(dictLabel.getText());
@@ -728,10 +826,13 @@ public class Controller
 
             // Save flashcard
             locDB.saveFlashcard(dictId, frontContent, backContent);
+
         }
 
 
-        else {
+        else
+        {
+
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Overwriting Flashcard");
             alert.setHeaderText("Trying to overwrite a flashcard...");
@@ -739,7 +840,9 @@ public class Controller
             Optional<ButtonType> result = alert.showAndWait();
 
             // Alter flashcard in case user clicks "OK"
-            if (result.get() == ButtonType.OK) {
+            if (result.get() == ButtonType.OK)
+            {
+
                 // Get flashcard_id and dictionary_id of flashcard to save
                 Label flashLabel = (Label) scene.lookup("#flashId");
                 flashId = Integer.parseInt(flashLabel.getText());
@@ -754,15 +857,20 @@ public class Controller
 
                 // Alter flashcard
                 locDB.updateFlashcard(flashId, frontContent, backContent);
+
             }
+
         }
 
         // Return to view_flashcard page
         returnToFlashcard(event, dictId, flashId);
+
     }
 
     // Returns to flashcard page after user creates/edits flashcard
-    public void returnToFlashcard(ActionEvent event, int dictId, int flashId) throws IOException {
+    public void returnToFlashcard(ActionEvent event, int dictId, int flashId) throws IOException
+    {
+
         // Get Stage info and set destination Scene
         Parent dest = FXMLLoader.load(getClass().getResource("view_flashcard.fxml"));
         Scene destScene = new Scene(dest);
@@ -776,10 +884,12 @@ public class Controller
         dictDropDown.setItems(observableDicts);
 
         // Updates item in ComboBox to show only their title instead of their full instance
-        Callback<ListView<Dictionary>, ListCell<Dictionary>> factory = lv -> new ListCell<Dictionary>() {
+        Callback<ListView<Dictionary>, ListCell<Dictionary>> factory = lv -> new ListCell<Dictionary>()
+        {
 
             @Override
-            protected void updateItem(Dictionary item, boolean empty) {
+            protected void updateItem(Dictionary item, boolean empty)
+            {
                 super.updateItem(item, empty);
                 setText(empty ? "" : item.getTitle());
             }
@@ -792,11 +902,14 @@ public class Controller
         // Find position of dictionary to select
         int selectDictPos = 0;
 
-        for (Dictionary dict : dictionaries) {
+        for (Dictionary dict : dictionaries)
+        {
+
             if (dict.getDict() == dictId)
                 break;
             else
                 selectDictPos++;
+
         }
 
         // Select dictionary corresponding to passed param
@@ -811,10 +924,12 @@ public class Controller
         flashDropDown.setVisible(true);
 
         // Updates item in ComboBox to show only their title instead of their full instance
-        Callback<ListView<Flashcard>, ListCell<Flashcard>> flashFactory = lv -> new ListCell<Flashcard>() {
+        Callback<ListView<Flashcard>, ListCell<Flashcard>> flashFactory = lv -> new ListCell<Flashcard>()
+        {
 
             @Override
-            protected void updateItem(Flashcard item, boolean empty) {
+            protected void updateItem(Flashcard item, boolean empty)
+            {
                 super.updateItem(item, empty);
                 setText(empty ? "" : item.frontProperty().getValue());
             }
@@ -825,16 +940,19 @@ public class Controller
         flashDropDown.setButtonCell(flashFactory.call(null));
 
         // If new flashcard as param, select last item in flashcard drop down
-        if (flashId == 0) {
+        if (flashId == 0)
+        {
             flashDropDown.getSelectionModel().selectLast();
         }
 
         // Select param flashcard
-        else {
+        else
+            {
             // Find position of flashcard to select
             int selectFlashPos = 0;
 
-            for (Flashcard flash : flashcards) {
+            for (Flashcard flash : flashcards)
+            {
                 if (flash.getFID() == flashId)
                     break;
                 else
@@ -843,6 +961,7 @@ public class Controller
 
             // Select dictionary corresponding to passed param
             flashDropDown.getSelectionModel().select(selectFlashPos);
+
         }
 
         // Lookup in Scene for buttons to interact with flashcard, make visible
@@ -861,19 +980,25 @@ public class Controller
         flipFlash.setDisable(false);
 
         // Make "Prev" button enabled if not first flashcard
-        if (flashDropDown.getSelectionModel().getSelectedIndex() != 0) {
+        if (flashDropDown.getSelectionModel().getSelectedIndex() != 0)
+        {
             Button prevFlash = (Button) destScene.lookup("#prevFlash");
             prevFlash.setDisable(false);
-        } else {
+        }
+        else
+        {
             Button prevFlash = (Button) destScene.lookup("#prevFlash");
             prevFlash.setDisable(true);
         }
 
         // Make "Next" button enabled if not last flashcard
-        if (flashDropDown.getSelectionModel().getSelectedIndex() != flashDropDown.getItems().size() - 1) {
+        if (flashDropDown.getSelectionModel().getSelectedIndex() != flashDropDown.getItems().size() - 1)
+        {
             Button nextFlash = (Button) destScene.lookup("#nextFlash");
             nextFlash.setDisable(false);
-        } else {
+        }
+        else
+        {
             Button nextFlash = (Button) destScene.lookup("#nextFlash");
             nextFlash.setDisable(true);
         }
@@ -883,7 +1008,9 @@ public class Controller
     }
 
     // Called to prepare Dictionary page
-    public void goDictionary(ActionEvent event) throws IOException{
+    public void goDictionary(ActionEvent event) throws IOException
+    {
+
         // Get Stage info and set destination Scene
         Parent dest = FXMLLoader.load(getClass().getResource("view_dictionary.fxml"));
         Scene destScene = new Scene(dest);
@@ -897,7 +1024,8 @@ public class Controller
         dictDropDown.setItems(observableDicts);
 
         // Updates item in ComboBox to show only their title instead of their full instance
-        Callback<ListView<Dictionary>, ListCell<Dictionary>> factory = lv -> new ListCell<Dictionary>() {
+        Callback<ListView<Dictionary>, ListCell<Dictionary>> factory = lv -> new ListCell<Dictionary>()
+        {
 
             @Override
             protected void updateItem(Dictionary item, boolean empty) {
@@ -912,6 +1040,7 @@ public class Controller
 
         // Finally display window
         window.show();
+
     }
 
     // Columns for table in dictionary page (need to be global objects)
@@ -919,7 +1048,9 @@ public class Controller
     @FXML TableColumn<Flashcard, String> backCol;
 
     // Displays selected Dictionary in Table of the dictionary page
-    public void displayDict(ActionEvent event) throws IOException{
+    public void displayDict(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -945,10 +1076,13 @@ public class Controller
         updateDict.setVisible(true);
         Button deleteDict = (Button) scene.lookup("#deleteDict");
         deleteDict.setVisible(true);
+
     }
 
     // Deletes selected Dictionary from local db
-    public void deleteDict(ActionEvent event) throws IOException{
+    public void deleteDict(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -958,7 +1092,9 @@ public class Controller
         Dictionary selected = (Dictionary) dictDropDown.getSelectionModel().getSelectedItem();
 
         // Try to delete dictionary if user selected one
-        if (selected != null) {
+        if (selected != null)
+        {
+
             // Create and show deletion alert
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Dictionary Deletion");
@@ -967,25 +1103,31 @@ public class Controller
             Optional<ButtonType> result = alert.showAndWait();
 
             // Delete dictionary in case user clicks "OK", reload window
-            if (result.get() == ButtonType.OK) {
+            if (result.get() == ButtonType.OK)
+            {
                 locDB.deleteDictionary(selected.getDict());
                 goDictionary(event);
             }
+
         }
 
         // Show Error alert in case no note selected
-        else {
+        else
+        {
+
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Delete Error");
             alert.setHeaderText("No note to delete!");
             alert.setContentText("You have to select a note to delete it!");
 
             alert.showAndWait();
+
         }
     }
 
     // Updates record of user select note in local db
-    public void updateDict(ActionEvent event) throws IOException {
+    public void updateDict(ActionEvent event) throws IOException
+    {
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1003,14 +1145,18 @@ public class Controller
         Optional<String> result = dialog.showAndWait();
 
         // Rename dictionary if user input new name and reload window
-        if (result.isPresent()){
+        if (result.isPresent())
+        {
             locDB.updateDictionary(dictId, result.get());
             goDictionary(event);
         }
+
     }
 
     // Saves new dictionary in local DB
-    public void saveDict(ActionEvent event) throws IOException {
+    public void saveDict(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1023,7 +1169,9 @@ public class Controller
         Optional<String> result = dialog.showAndWait();
 
         // Rename dictionary if user input new name and reload window
-        if (result.isPresent()){
+        if (result.isPresent())
+        {
+
             locDB.saveDictionary(result.get());
 
             // Create and show alert to add flashcards to new dictionary
@@ -1034,19 +1182,28 @@ public class Controller
             Optional<ButtonType> resultButton = alert.showAndWait();
 
             // Go to flashcards page if user confirms
-            if (resultButton.get() == ButtonType.OK) {
+            if (resultButton.get() == ButtonType.OK)
+            {
+
                 goFlashcard(event);
+
             }
 
             // Reload page if user decides to remain
-            else {
+            else
+            {
+
                 goDictionary(event);
+
             }
         }
+
     }
 
     // Called to prepare Notes page
-    public void goNotes(ActionEvent event) throws IOException {
+    public void goNotes(ActionEvent event) throws IOException
+    {
+
         // Get Stage info and set destination Scene
         Parent dest = FXMLLoader.load(getClass().getResource("view_notes.fxml"));
         Scene destScene = new Scene(dest);
@@ -1060,7 +1217,8 @@ public class Controller
         noteDropDown.setItems(observableNotes);
 
         // Updates item in ComboBox to show only their title instead of their full instance
-        Callback<ListView<Note>, ListCell<Note>> factory = lv -> new ListCell<Note>() {
+        Callback<ListView<Note>, ListCell<Note>> factory = lv -> new ListCell<Note>()
+        {
 
             @Override
             protected void updateItem(Note item, boolean empty) {
@@ -1075,10 +1233,13 @@ public class Controller
 
         // Finally display window
         window.show();
+
     }
 
     // Displays selected Note in TextField and TextArea of the notes page
-    public void displayNote(ActionEvent event) throws IOException{
+    public void displayNote(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1098,10 +1259,13 @@ public class Controller
         // Set "Save" button (alter note) to visible
         Button updateNote = (Button) scene.lookup("#updateNote");
         updateNote.setVisible(true);
+
     }
 
     // Makes the note title and the note content editable when "Edit" button clicked
-    public void editNote(ActionEvent event) throws IOException{
+    public void editNote(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1113,10 +1277,13 @@ public class Controller
         // Lookup in the Scene for TextArea (note content) and make it editable
         TextArea noteContent = (TextArea) scene.lookup("#noteContent");
         noteContent.setEditable(true);
+
     }
 
     // Deletes a note from local DB (if user previously selected one
-    public void deleteNote(ActionEvent event) throws IOException{
+    public void deleteNote(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1126,7 +1293,9 @@ public class Controller
         Note selected = (Note) noteDropDown.getSelectionModel().getSelectedItem();
 
         // Try to delete note if user selected one
-        if (selected != null) {
+        if (selected != null)
+        {
+
             // Create and show deletion alert
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Note Deletion");
@@ -1135,25 +1304,34 @@ public class Controller
             Optional<ButtonType> result = alert.showAndWait();
 
             // Delete note in case user clicks "OK", reload window
-            if (result.get() == ButtonType.OK) {
+            if (result.get() == ButtonType.OK)
+            {
+
                 locDB.deleteNote(selected.getDict());
                 goNotes(event);
+
             }
+
         }
 
         // Show Error alert in case no note selected
-        else {
+        else
+        {
+
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Delete Error");
             alert.setHeaderText("No note to delete!");
             alert.setContentText("You have to select a note to delete it!");
 
             alert.showAndWait();
+
         }
     }
 
     // Saves the note as a new note in local DB
-    public void saveNote(ActionEvent event) throws IOException {
+    public void saveNote(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1169,10 +1347,13 @@ public class Controller
         // Save note and reload window
         locDB.saveNote(title, content);
         goNotes(event);
+
     }
 
     // Updates record of user select note in local db
-    public void updateNote(ActionEvent event) throws IOException {
+    public void updateNote(ActionEvent event) throws IOException
+    {
+
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1198,48 +1379,67 @@ public class Controller
         Optional<ButtonType> result = alert.showAndWait();
 
         // Delete note in case user clicks "OK", reload window
-        if (result.get() == ButtonType.OK) {
+        if (result.get() == ButtonType.OK)
+        {
+
             locDB.updateNote(noteId, title, content);
             goNotes(event);
+
         }
+
     }
 
-    public void goBack(ActionEvent event) throws IOException{
+    public void goBack(ActionEvent event) throws IOException
+    {
+
         Parent dest = FXMLLoader.load(getClass().getResource("view_flashcard.fxml"));
         Scene destScene = new Scene(dest);
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
     }
 
-    public void goForuum(ActionEvent event) throws IOException{
+    public void goForuum(ActionEvent event) throws IOException
+    {
+
         Parent dest = FXMLLoader.load(getClass().getResource("foruum.fxml"));
         Scene destScene = new Scene(dest);
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
     }
-    public void goClassruumScholar(ActionEvent event) throws IOException{
+
+    public void goClassruumScholar(ActionEvent event) throws IOException
+    {
+
         Parent dest = FXMLLoader.load(getClass().getResource("classruum_scholar.fxml"));
         Scene destScene = new Scene(dest);
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
     }
 
-    public void goClassruumEducator(ActionEvent event) throws IOException{
+    public void goClassruumEducator(ActionEvent event) throws IOException
+    {
+
         Parent dest = FXMLLoader.load(getClass().getResource("classruum_educator.fxml"));
         Scene destScene = new Scene(dest);
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
     }
 
-    public void Scholarselected(MouseEvent event) throws IOException{
+    public void Scholarselected(MouseEvent event) throws IOException
+    {
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
 
@@ -1248,23 +1448,35 @@ public class Controller
         Label scholartxt = (Label) scene.lookup("#scholartxt");
         Label educatortxt = (Label) scene.lookup("#educatortxt");
 
-        if(scholar.getOpacity()==0){
+        if(scholar.getOpacity()==0)
+        {
+
             scholar.setOpacity(1);
             scholartxt.setStyle("-fx-font-weight: normal");
             accountType="";
+
         }
-        else{
+        else
+        {
+
             scholar.setOpacity(0);
             scholartxt.setStyle("-fx-font-weight: bold");
             accountType="Scholar";
-            if (educator.getOpacity()==0) {
+            if (educator.getOpacity()==0)
+            {
+
                 educator.setOpacity(1);
                 educatortxt.setStyle("-fx-font-weight: normal");
+
             }
+
         }
+
     }
 
-    public void Educatorselected(MouseEvent event) throws IOException {
+    public void Educatorselected(MouseEvent event) throws IOException
+    {
+
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
 
@@ -1273,20 +1485,30 @@ public class Controller
         Label educatortxt = (Label) scene.lookup("#educatortxt");
         Label scholartxt = (Label) scene.lookup("#scholartxt");
 
-        if (educator.getOpacity()==0) {
+        if (educator.getOpacity()==0)
+        {
+
             educator.setOpacity(1);
             educatortxt.setStyle("-fx-font-weight: normal");
             accountType="";
+
         }
-        else {
+        else
+        {
+
             educator.setOpacity(0);
             educatortxt.setStyle("-fx-font-weight: bold");
             accountType="Educator";
-            if(scholar.getOpacity()==0){
+            if(scholar.getOpacity()==0)
+            {
+
                 scholar.setOpacity(1);
                 scholartxt.setStyle("-fx-font-weight: normal");
+
             }
+
         }
+
     }
 
 }
