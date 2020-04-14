@@ -22,7 +22,7 @@ public class Controller
 {
     
     public String accountType="";
-	public String currentUser="";
+	public String currentUser="lloyd";
 	
     LocalDB locDB = new LocalDB();
 
@@ -106,6 +106,9 @@ public class Controller
     public void loginSync(ActionEvent event) throws IOException
     {
 
+        //IT DOES GET HERE
+        //System.out.println(currentUser);
+
         //Establishes an ONLINE Connection
         Connection onlineConnect = null;
 
@@ -164,6 +167,18 @@ public class Controller
 
                         //Result Sets For All Where There is a Match
                         ResultSet flashcardResults = flashcardStatement.executeQuery();
+
+                        /*
+                        while(flashcardResults.next())
+                        {
+
+                            System.out.println(flashcardResults.getString("flashcard_id"));
+                            System.out.println(flashcardResults.getString("front_content"));
+                            System.out.println(flashcardResults.getString("back_content"));
+
+                        }
+                        */
+
                         ResultSet noteResults = noteStatement.executeQuery();
                         ResultSet dictionaryResults = dictionaryStatement.executeQuery();
                         ResultSet quizResults = quizStatement.executeQuery();
@@ -186,10 +201,14 @@ public class Controller
 
                         PreparedStatement pstmt = null;
 
-                        String rsrcSQL = "REPLACE INTO resources VALUES (?)";
-                        pstmt = offlineConnect.prepareStatement(rsrcSQL);
+                        pstmt = offlineConnect.prepareStatement("REPLACE INTO resources VALUES (?)");
                         pstmt.setInt(1, resource_id);
-                        ResultSet rsrcResult = pstmt.executeQuery(rsrcSQL);
+                        pstmt.executeUpdate();
+
+                        //
+                        //
+                        //
+                        //
 
                         if(flashcardResults.next() != false)
                         {
@@ -214,7 +233,7 @@ public class Controller
                                 pstmt.setString(5, front_content);
                                 pstmt.setString(6, back_content);
 
-                                ResultSet flshResult = pstmt.executeQuery(flshSQL);
+                                pstmt.executeUpdate();
 
                             }
                             while (flashcardResults.next());
@@ -239,7 +258,7 @@ public class Controller
                                 pstmt.setString(3, note_title);
                                 pstmt.setString(4, note_content);
 
-                                ResultSet noteResult = pstmt.executeQuery(noteSQL);
+                                pstmt.executeUpdate();
 
                             }
                             while (noteResults.next());
@@ -262,7 +281,7 @@ public class Controller
                                 pstmt.setInt(2, resource_id);
                                 pstmt.setString(3, dictionary_name);
 
-                                ResultSet dictResult = pstmt.executeQuery(dctnSQL);
+                                pstmt.executeUpdate();
 
                             }
                             while (dictionaryResults.next());
@@ -285,9 +304,9 @@ public class Controller
                                 pstmt.setInt(1, quiz_id);
                                 pstmt.setInt(2, resource_id);
                                 pstmt.setString(3, quiz_name);
-                                 pstmt.setString(4, quiz_topic);
+                                pstmt.setString(4, quiz_topic);
 
-                                ResultSet quizResult = pstmt.executeQuery(quizSQL);
+                                pstmt.executeUpdate();
 
                             }
                             while (quizResults.next());
@@ -360,6 +379,8 @@ public class Controller
     // navigation buttons
     public void goHome(ActionEvent event) throws IOException
     {
+
+        loginSync(event);
 
         Parent dest = FXMLLoader.load(getClass().getResource("home.fxml"));
         Scene destScene = new Scene(dest);
