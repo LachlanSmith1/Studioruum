@@ -7,19 +7,30 @@ import java.util.ArrayList;
 
 public class Quiz extends Resource
 {
+	private int quizID;
 	// arraylist to hold the flashcards in the quiz
 	ArrayList<Flashcard> theQuiz = new ArrayList<Flashcard>();
 
 	//the current question and answer for the selected flashcard in the quiz
 	private String question, answer, topic;
 
-	public Quiz(int rID, String name, String Topic)
+	public Quiz(int rID, int qID, String name, String Topic)
 	{
 
 		super(rID, name);
+		quizID = qID;
 
 		topic = Topic;
 
+	}
+
+	// getter and setter for quizID
+	public int getQuiz() {
+		return quizID;
+	}
+
+	public void setQuiz(int ID) {
+		this.quizID = ID;
 	}
 
 	//adds a flashcard to the quiz
