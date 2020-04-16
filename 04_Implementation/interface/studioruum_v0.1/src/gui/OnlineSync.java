@@ -1,84 +1,39 @@
 /*
-	
+
 	OnlineSync.java
 	-----------------
-	
+
 	This is a Basic Class to Test the Functionality of the Online Datbase
 
 	It Will Initially Just Have Read / Write / Edit Capabilities
-	
+
 	It Will Be Expanded to Sync With the Offline Database
-	
+
 	*** USE THE COMMAND BELOW TO RUN THE CLASS WHEN COMPILED ***
-	
+
 	java -cp ../lib/mysql-connector-java-8.0.19.jar;. OnlineSync
-	
+
 	*** USE THE COMMAND ABOVE TO RUN THE CLASS WHEN COMPILED ***
-	
+
 */
 
 package gui;
 
 //Import Statements For JDBC and Etc.
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.sql.*;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
-import java.sql.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.MessageDigest;
-import java.time.*;
 
 public class OnlineSync
 {
 
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-	public static String bytesToStringHex(byte[] bytes) {
-		char[] hexChars = new char[bytes.length * 2];
-		for (int j = 0; j < bytes.length; j++) {
-			int v = bytes[j] & 0xFF;
-			hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-			hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-		}
-		return new String(hexChars);
-	}
 
-	public byte[] generateSalt(){
-		byte[] salt=new byte[32];
-		SecureRandom rand = new SecureRandom();
-		rand.nextBytes(salt);
-		return salt;
-	}
-
-	public byte[] getSalt(Connection studConnect, String username){
-		PreparedStatement getSalt;
-		byte[] salt=null;
-		try {
-			getSalt = studConnect.prepareStatement("SELECT salt FROM users WHERE username=?;");
-			getSalt.setString(1, username);
-			ResultSet rs = getSalt.executeQuery();
-			rs.next();
-			Blob blob = rs.getBlob(1);
-			salt = blob.getBytes(1,(int)blob.length());
-			getSalt.close();
-			rs.close();
-		}
-		catch(SQLException ex){
-			System.out.println(ex);
-		}
-
-
-		return salt;
-	}
-
-	public String generateHash(byte[] salt, String password)throws NoSuchAlgorithmException {
-		MessageDigest digest = MessageDigest.getInstance("SHA-256");
-		digest.reset();
-		digest.update(salt);
-		byte[] hash = digest.digest(password.getBytes());
-		String hashedPassword=bytesToStringHex(hash);
-		return hashedPassword;
-	}
-
+	//Acts as the Main Method of the Program
 	public Connection Connect() {
 
 		//Establishes a Connection
@@ -92,7 +47,8 @@ public class OnlineSync
 		String password = "zitozito";
 
 		//Attempting to Connect
-		try {
+		try
+		{
 
 			studConnect = DriverManager.getConnection(host, user, password);
 
@@ -111,16 +67,23 @@ public class OnlineSync
 
 			}
 
-		} catch (SQLException ex) {
+		}
+		catch (SQLException ex)
+		{
 
 			System.out.println("An Error Occured When Connecting to the Database.");
 			ex.printStackTrace();
 
 		}
+
 		return studConnect;
+
 	}
-	public void Disconnect(Connection studConnect){
-		//Close The Connection When Finished
+
+	//Close The Connection When Finished
+	public void Disconnect(Connection studConnect)
+	{
+
 		if (studConnect != null)
 		{
 
@@ -141,7 +104,86 @@ public class OnlineSync
 
 	}
 
+	//////////////////////////
+	/*
 
+
+
+		PASSWORDS
+
+
+
+	*/
+	//////////////////////////
+
+	public static String bytesToStringHex(byte[] bytes)
+	{
+
+		char[] hexChars = new char[bytes.length * 2];
+
+		for (int j = 0; j < bytes.length; j++)
+		{
+
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+			hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+
+		}
+
+		return new String(hexChars);
+
+	}
+
+	public byte[] generateSalt()
+	{
+
+		byte[] salt=new byte[32];
+		SecureRandom rand = new SecureRandom();
+		rand.nextBytes(salt);
+		return salt;
+
+	}
+
+	public byte[] getSalt(Connection studConnect, String username)
+	{
+
+		PreparedStatement getSalt;
+		byte[] salt=null;
+
+		try
+		{
+
+			getSalt = studConnect.prepareStatement("SELECT salt FROM users WHERE username=?;");
+			getSalt.setString(1, username);
+			ResultSet rs = getSalt.executeQuery();
+			rs.next();
+			Blob blob = rs.getBlob(1);
+			salt = blob.getBytes(1,(int)blob.length());
+			getSalt.close();
+			rs.close();
+
+		}
+		catch(SQLException ex)
+		{
+
+			System.out.println(ex);
+
+		}
+
+		return salt;
+
+	}
+
+	public String generateHash(byte[] salt, String password)throws NoSuchAlgorithmException
+	{
+
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		digest.reset();
+		digest.update(salt);
+		byte[] hash = digest.digest(password.getBytes());
+		String hashedPassword=bytesToStringHex(hash);
+		return hashedPassword;
+	}
 
 	//////////////////////////
 	/*
@@ -157,6 +199,7 @@ public class OnlineSync
 
 	public Boolean uploadUsers(Connection studConnect, String uname, String pword, byte[] salt)
 	{
+
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 		LocalDateTime now;
 		System.out.println("Attempting to Add a Value to the Table ~users~.");
@@ -166,6 +209,7 @@ public class OnlineSync
 
 		try
 		{
+
 			now=LocalDateTime.now();
 			String username = uname;
 			String email = "l.jones44@student.liverpool.ac.uk";
@@ -179,12 +223,18 @@ public class OnlineSync
 			int unique = rs.getInt(1);
 			rs.close();
 			stmt.close();
-			if(unique>0){
+
+			if(unique>0)
+			{
+
 				System.out.println("Username already exists");
 				return false;
+
 			}
 
-			else {
+			else
+			{
+
 				//Creating a Prepared Statement and Placing the Table Value In
 				statement = studConnect.prepareStatement("INSERT INTO users VALUES(?, ?, ?, ?, ?,?);");
 				statement.setString(1, username);
@@ -197,6 +247,7 @@ public class OnlineSync
 				statement.executeUpdate();
 				statement.close();
 				return true;
+
 			}
 		}
 		catch (SQLException ex)
@@ -327,35 +378,6 @@ public class OnlineSync
 
 	}
 
-	public Boolean login(Connection studConnect, String username, String password) {
-		PreparedStatement statement = null;
-
-		try {
-
-			//Creating a Prepared Statement
-			statement = studConnect.prepareStatement("SELECT password FROM users WHERE username = ?;");
-			statement.setString(1, username);
-			ResultSet rs = statement.executeQuery();
-			rs.next();
-
-			String realPass = rs.getString(1);
-			rs.close();
-			statement.close();
-			if(realPass.equals(password)){
-				return true;
-			}
-			else{
-				return false;
-			}
-
-		} catch (SQLException ex) {
-
-			System.out.println("Error Connecting: " + ex);
-			return false;
-
-		}
-	}
-
 	public void downloadScholars(Connection studConnect)
 	{
 
@@ -409,6 +431,47 @@ public class OnlineSync
 
 		}
 
+	}
+
+	public Boolean login(Connection studConnect, String username, String password)
+	{
+
+		PreparedStatement statement = null;
+
+		try
+		{
+
+			//Creating a Prepared Statement
+			statement = studConnect.prepareStatement("SELECT password FROM users WHERE username = ?;");
+			statement.setString(1, username);
+			ResultSet rs = statement.executeQuery();
+			rs.next();
+
+			String realPass = rs.getString(1);
+			rs.close();
+			statement.close();
+
+			if(realPass.equals(password))
+			{
+
+				return true;
+
+			}
+			else
+			{
+
+				return false;
+
+			}
+
+		}
+		catch (SQLException ex)
+		{
+
+			System.out.println("Error Connecting: " + ex);
+			return false;
+
+		}
 	}
 
 	//////////////////////////
@@ -525,6 +588,18 @@ public class OnlineSync
 		}
 
 	}
+
+	//////////////////////////
+	/*
+
+
+
+		CLASSRUUMS TABLE
+
+
+
+	*/
+	//////////////////////////
 
 	public void uploadClassruums(Connection studConnect, String class_name) throws SQLException {
 		System.out.println("Attempting to Add a Value to the Table ~classruums~.");
@@ -734,6 +809,18 @@ public class OnlineSync
 		}
 	}
 
+	//////////////////////////
+	/*
+
+
+
+		FORUUMS TABLE
+
+
+
+	*/
+	//////////////////////////
+
 	public void uploadForuums(Integer forum_id, Integer class_id, String forum_title) throws SQLException {
 		System.out.println("Attempting to Add a Value to the Table ~foruums~.");
 
@@ -844,6 +931,18 @@ public class OnlineSync
 
 		}
 	}
+
+	//////////////////////////
+	/*
+
+
+
+		FORUUMS TABLE
+
+
+
+	*/
+	//////////////////////////
 
 	public void uploadComment(Integer comment_id, Integer forum_id, String comment_content, String username, String time_updated) throws SQLException {
 		System.out.println("Attempting to Add a Value to the Table ~comments~.");
