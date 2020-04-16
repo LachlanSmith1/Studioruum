@@ -1,31 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"  fx:controller="gui.Controller">
+<AnchorPane prefHeight="482.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
-      <Button layoutX="36.0" layoutY="60.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="49.0" text="Back" />
-      <Button layoutX="101.0" layoutY="60.0" mnemonicParsing="false" onAction="#goHome" text="Home" />
-      <Label layoutX="203.0" layoutY="40.0" text="classruum">
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#a9b5bf" height="291.0" layoutX="217.0" layoutY="172.0" stroke="BLACK" strokeType="INSIDE" width="501.0" />
+      <Button layoutX="36.0" layoutY="58.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="49.0" text="Back" />
+      <Button layoutX="112.0" layoutY="60.0" mnemonicParsing="false" onAction="#goHome" text="Home" />
+      <Label layoutX="302.0" layoutY="40.0" text="classruum">
          <font>
             <Font name="Segoe UI Semibold" size="43.0" />
          </font>
       </Label>
-      <Label layoutX="489.0" layoutY="64.0" text="Scholar Label" />
-      <Label layoutX="244.0" layoutY="104.0" text="classruum title">
+      <Label layoutX="666.0" layoutY="53.0" text="Scholar Label" />
+      <Label layoutX="343.0" layoutY="119.0" text="classruum title">
          <font>
             <Font name="Segoe UI" size="18.0" />
          </font></Label>
-      <ChoiceBox layoutX="32.0" layoutY="180.0" prefWidth="150.0" />
-      <Label layoutX="36.0" layoutY="153.0" text="Quizzes set by Educator:" />
-      <ChoiceBox layoutX="224.0" layoutY="179.0" prefWidth="150.0" />
-      <Label layoutX="224.0" layoutY="152.0" text="Feedback from Quizzes:" />
-      <Label layoutX="410.0" layoutY="147.0" prefHeight="25.0" prefWidth="126.0" text="Shared Resources:" />
-      <ChoiceBox layoutX="410.0" layoutY="178.0" prefWidth="150.0" />
-      <Button layoutX="437.0" layoutY="330.0" mnemonicParsing="false" text="Leave Classruum" />
+      <Button layoutX="603.0" layoutY="417.0" mnemonicParsing="false" text="Leave Classruum" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#a9b5bf" height="275.0" layoutX="29.0" layoutY="118.0" stroke="BLACK" strokeType="INSIDE" width="151.0" />
+      <VBox layoutX="36.0" layoutY="131.0" prefHeight="269.0" prefWidth="186.0">
+         <children>
+            <Label text="Classruums:">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Hyperlink fx:id="Classruum1" prefHeight="27.0" prefWidth="188.0" text="Classruum 1" />
+            <Hyperlink layoutX="10.0" layoutY="45.0" prefHeight="27.0" prefWidth="188.0" text="Classruum 1" />
+            <Hyperlink layoutX="10.0" layoutY="72.0" prefHeight="27.0" prefWidth="188.0" text="Classruum 1" />
+            <Hyperlink layoutX="10.0" layoutY="126.0" prefHeight="27.0" prefWidth="188.0" text="Classruum 1" />
+            <Hyperlink layoutX="10.0" layoutY="99.0" prefHeight="27.0" prefWidth="188.0" text="Classruum 1" />
+            <Hyperlink layoutX="10.0" layoutY="153.0" prefHeight="27.0" prefWidth="188.0" text="Classruum 1" />
+            <Hyperlink layoutX="10.0" layoutY="180.0" prefHeight="27.0" prefWidth="188.0" text="Classruum 1" />
+            <Hyperlink layoutX="10.0" layoutY="207.0" prefHeight="27.0" prefWidth="188.0" text="Classruum 1" />
+         </children>
+      </VBox>
+      <VBox layoutX="235.0" layoutY="179.0" prefHeight="291.0" prefWidth="286.0">
+         <children>
+            <Label prefHeight="35.0" prefWidth="244.0" text="Educators Resources:">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Hyperlink prefHeight="23.0" prefWidth="176.0" text="Educators Resource 1" />
+            <Hyperlink layoutX="10.0" layoutY="45.0" prefHeight="23.0" prefWidth="176.0" text="Educators Resource 1" />
+            <Hyperlink layoutX="10.0" layoutY="68.0" prefHeight="23.0" prefWidth="176.0" text="Educators Resource 1" />
+            <Hyperlink layoutX="10.0" layoutY="91.0" prefHeight="23.0" prefWidth="176.0" text="Educators Resource 1" />
+            <Hyperlink layoutX="10.0" layoutY="114.0" prefHeight="23.0" prefWidth="176.0" text="Educators Resource 1" />
+            <Hyperlink layoutX="10.0" layoutY="137.0" prefHeight="23.0" prefWidth="176.0" text="Educators Resource 1" />
+            <Hyperlink layoutX="10.0" layoutY="160.0" prefHeight="23.0" prefWidth="176.0" text="Educators Resource 1" />
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets></VBox>
    </children>
 </AnchorPane>

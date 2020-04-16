@@ -1,6 +1,9 @@
 package gui;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.sql.*;
 
@@ -17,14 +20,28 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
-public class Controller 
+public class Controller
 {
-    
+
     public String accountType="";
-	public String currentUser="lloyd";
-	
+    public String currentUser="lloyd";
+
     LocalDB locDB = new LocalDB();
+
+    public OnlineSync online = new OnlineSync();
+
+    Connection studConnect = null;
+
+    //The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
+    String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
+    String user = "group40";
+    String password = "zitozito";
 
     //checks if the username exists in the database
     public Boolean isUnique(String username)
@@ -39,33 +56,53 @@ public class Controller
     }
 
     //checks if the username and password combo used for sign up is valid
-    public void validSignUp(ActionEvent event) throws IOException
-    {
-
+    public void validSignUp(ActionEvent event) throws IOException{
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
-
+        Label warning = (Label) scene.lookup("#warning");
         TextField uname = (TextField) scene.lookup("#logintxt");
         TextField psswrd = (TextField) scene.lookup("#passwordtxt");
         TextField Repsswrd = (TextField) scene.lookup("#Repasswordtxt");
-        String username = uname.getText();
+        String username = uname.getText().toLowerCase();
         String password = psswrd.getText();
         String Repassword = Repsswrd.getText();
 
-        if (isUnique(username)==true&&password.equals(Repassword)&&password.length()>5&&accountType!="")
-        {
 
-            currentUser = username;
-            goHome(event);
+        if (password.equals(Repassword)&&password.length()>5&&accountType!=""){
+            studConnect = online.Connect();
+            byte[] salt = online.generateSalt();
+            try {
+                password = online.generateHash(salt, password);
+            }
+            catch(NoSuchAlgorithmException ex){
+                ex.printStackTrace();
+            }
+            if(online.uploadUsers(studConnect, username, password, salt)){
+                warning.setText("");
+                goHome(event);
+                online.downloadUsers(studConnect);
+            }
+            else{
+                System.out.println("username is taken");
+                warning.setText("This username is taken: Please enter a different username.");
+            }
+
             //create new record and add to database
-
         }
-
+        else if(accountType==""){
+            warning.setText("Account type not selected: Please select an account type");
+        }
+        else if(!password.equals(Repassword)){
+            warning.setText("The 2 passwords do not match: Please re-enter.");
+        }
+        else{
+            warning.setText("Invalid Password: Please include at least 1 capital, 1 numeric and length 5.");
+        }
     }
-    
-    
 
-// hyperlink on the log in page that allows user to register
+
+
+    // hyperlink on the log in page that allows user to register
     public void signUplink(ActionEvent event) throws IOException
     {
 
@@ -80,34 +117,38 @@ public class Controller
     }
 
     // validate user account info
-    public void validNamePassword(ActionEvent event) throws IOException
-    {
-
+    public void validNamePassword(ActionEvent event) throws IOException{
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
 
+        studConnect = online.Connect();
+        Label warning = (Label) scene.lookup("#warning");
+
         // users input
-        TextField uname = (TextField) scene.lookup("logintxt");
-        TextField psswrd = (TextField) scene.lookup("passwordtxt");
-        String username = uname.getText();
+        TextField uname = (TextField) scene.lookup("#logintxt");
+        TextField psswrd = (TextField) scene.lookup("#passwordtxt");
+        String username = uname.getText().toLowerCase();
         String password = psswrd.getText();
-
-        if(username.length()>5&&password.length()>5)
-        {
-
-            currentUser = username;
-            goHome(event);
-
+        byte[] salt = online.getSalt(studConnect,username);
+        try {
+            password = online.generateHash(salt, password);
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        }
+        if(username.length()>5&&password.length()>5){
+            if(online.login(studConnect,username,password)) {
+                goHome(event);
+            }
+            else{
+                System.out.println("Invalid username password combo");
+            }
         }
 
     }
 
-	//Used to Download All Resources Needed For a User to Access the System
+    //Used to Download All Resources Needed For a User to Access the System
     public void loginSync(ActionEvent event) throws IOException
     {
-
-        //IT DOES GET HERE
-        //System.out.println(currentUser);
 
         //Establishes an ONLINE Connection
         Connection onlineConnect = null;
@@ -167,18 +208,6 @@ public class Controller
 
                         //Result Sets For All Where There is a Match
                         ResultSet flashcardResults = flashcardStatement.executeQuery();
-
-                        /*
-                        while(flashcardResults.next())
-                        {
-
-                            System.out.println(flashcardResults.getString("flashcard_id"));
-                            System.out.println(flashcardResults.getString("front_content"));
-                            System.out.println(flashcardResults.getString("back_content"));
-
-                        }
-                        */
-
                         ResultSet noteResults = noteStatement.executeQuery();
                         ResultSet dictionaryResults = dictionaryStatement.executeQuery();
                         ResultSet quizResults = quizStatement.executeQuery();
@@ -201,14 +230,10 @@ public class Controller
 
                         PreparedStatement pstmt = null;
 
-                        pstmt = offlineConnect.prepareStatement("REPLACE INTO resources VALUES (?)");
+                        String rsrcSQL = "REPLACE INTO resources VALUES (?)";
+                        pstmt = offlineConnect.prepareStatement(rsrcSQL);
                         pstmt.setInt(1, resource_id);
-                        pstmt.executeUpdate();
-
-                        //
-                        //
-                        //
-                        //
+                        ResultSet rsrcResult = pstmt.executeQuery(rsrcSQL);
 
                         if(flashcardResults.next() != false)
                         {
@@ -233,7 +258,7 @@ public class Controller
                                 pstmt.setString(5, front_content);
                                 pstmt.setString(6, back_content);
 
-                                pstmt.executeUpdate();
+                                ResultSet flshResult = pstmt.executeQuery(flshSQL);
 
                             }
                             while (flashcardResults.next());
@@ -258,7 +283,7 @@ public class Controller
                                 pstmt.setString(3, note_title);
                                 pstmt.setString(4, note_content);
 
-                                pstmt.executeUpdate();
+                                ResultSet noteResult = pstmt.executeQuery(noteSQL);
 
                             }
                             while (noteResults.next());
@@ -281,7 +306,7 @@ public class Controller
                                 pstmt.setInt(2, resource_id);
                                 pstmt.setString(3, dictionary_name);
 
-                                pstmt.executeUpdate();
+                                ResultSet dictResult = pstmt.executeQuery(dctnSQL);
 
                             }
                             while (dictionaryResults.next());
@@ -290,7 +315,7 @@ public class Controller
                         if(quizResults.next() != false)
                         {
                             do
-                                {
+                            {
 
                                 int quiz_id = quizResults.getInt("quiz_id");
 
@@ -306,7 +331,7 @@ public class Controller
                                 pstmt.setString(3, quiz_name);
                                 pstmt.setString(4, quiz_topic);
 
-                                pstmt.executeUpdate();
+                                ResultSet quizResult = pstmt.executeQuery(quizSQL);
 
                             }
                             while (quizResults.next());
@@ -379,8 +404,6 @@ public class Controller
     // navigation buttons
     public void goHome(ActionEvent event) throws IOException
     {
-
-        loginSync(event);
 
         Parent dest = FXMLLoader.load(getClass().getResource("home.fxml"));
         Scene destScene = new Scene(dest);
@@ -968,7 +991,7 @@ public class Controller
 
         // Select param flashcard
         else
-            {
+        {
             // Find position of flashcard to select
             int selectFlashPos = 0;
 
@@ -1260,7 +1283,6 @@ public class Controller
     // Displays selected Note in TextField and TextArea of the notes page
     public void displayNote(ActionEvent event) throws IOException
     {
-
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1434,32 +1456,46 @@ public class Controller
 
     }
 
-    public void goClassruumScholar(ActionEvent event) throws IOException
-    {
+    public void goClassruum(ActionEvent event) throws IOException {
+        if (accountType == "scholar") {
+            Parent dest = FXMLLoader.load(getClass().getResource("classruum_scholar.fxml"));
+            Scene destScene = new Scene(dest);
+            //This line gets the Stage information
+            Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            window.setScene(destScene);
+            window.show();
+        } else {
+            Parent dest = FXMLLoader.load(getClass().getResource("classruum_educator.fxml"));
+            Scene destScene = new Scene(dest);
 
-        Parent dest = FXMLLoader.load(getClass().getResource("classruum_scholar.fxml"));
-        Scene destScene = new Scene(dest);
-        //This line gets the Stage information
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        window.setScene(destScene);
-        window.show();
+            //This line gets the Stage information
+            Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            window.setScene(destScene);
 
+            // Lookup in the Scene for ComboBox, fetch items from local DB and add them
+            ComboBox resourceDropDown = (ComboBox) destScene.lookup("#classDrpDwn");
+            List<Resource> resource = locDB.allResources();
+            ObservableList<Resource> observableResources = FXCollections.observableList(resource);
+            resourceDropDown.setItems(observableResources);
+
+            // Updates item in ComboBox to show only their title instead of their full instance
+            Callback<ListView<Resource>, ListCell<Resource>> factory = lv -> new ListCell<Resource>()
+            {
+                @Override
+                protected void updateItem(Resource item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty ? "" : item.getTitle());
+                }
+            };
+
+            resourceDropDown.setCellFactory(factory);
+            resourceDropDown.setButtonCell(factory.call(null));
+
+            window.show();
+        }
     }
 
-    public void goClassruumEducator(ActionEvent event) throws IOException
-    {
-
-        Parent dest = FXMLLoader.load(getClass().getResource("classruum_educator.fxml"));
-        Scene destScene = new Scene(dest);
-        //This line gets the Stage information
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        window.setScene(destScene);
-        window.show();
-
-    }
-
-    public void Scholarselected(MouseEvent event) throws IOException
-    {
+    public void Scholarselected(MouseEvent event) throws IOException {
 
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -1471,11 +1507,9 @@ public class Controller
 
         if(scholar.getOpacity()==0)
         {
-
             scholar.setOpacity(1);
             scholartxt.setStyle("-fx-font-weight: normal");
             accountType="";
-
         }
         else
         {
@@ -1532,4 +1566,99 @@ public class Controller
 
     }
 
+
+    public void askingAForuumQuestion(ActionEvent event) throws IOException, SQLException {
+
+
+        Parent dest = FXMLLoader.load(getClass().getResource("ask_a_question.fxml"));
+        Scene destScene = new Scene(dest);
+        //This line gets the Stage information
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(destScene);
+        window.show();
+
+
+        Scene scene = window.getScene();
+        TextField questionTitle = (TextField) scene.lookup("#forumTitle");
+        TextArea questionContents = (TextArea) scene.lookup("#forumContent");
+
+        String qTitle = questionTitle.getText();
+        // String qContents = questionContents.getText();
+
+        System.out.println(qTitle);
+        // System.out.println(qContents);
+
+       /* DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        LocalDateTime now = null;
+
+        // Uncomment to test
+
+
+        int comment_id = 1;
+        int forum_id = 1;
+        String comment_content = "";
+        String username = user;
+        String time_updated = dtf.format(now);
+
+         online.uploadComment(comment_id, forum_id, comment_content, username, time_updated);*/
+
+    }
+
+    public void submittingTheQuestion(ActionEvent event) throws IOException
+    {
+
+        Parent dest = FXMLLoader.load(getClass().getResource("foruum.fxml"));
+        Scene destScene = new Scene(dest);
+        //This line gets the Stage information
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(destScene);
+        window.show();
+    }
+
+
+    public void populatingFAQs(ActionEvent event) throws IOException, SQLException {
+
+        // online.downloadForuum();
+
+
+
+        // Get Stage and Scene info
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = window.getScene();
+
+        Hyperlink hyperlink1 = (Hyperlink) scene.lookup("#FAQ1");
+
+        //hyperlink1.setText(forum_title);
+
+    }
+
+
+    public void createClassruum(ActionEvent event) throws SQLException, IOException {
+
+        TextInputDialog classruumDialog = new TextInputDialog();
+
+        classruumDialog.setTitle("Enter the Classruum Title");
+        classruumDialog.setHeaderText("What is the Classruum Title?");
+        classruumDialog.setContentText("Please enter the classruum name:");
+
+        String class_title = "";
+        Optional<String> result = classruumDialog.showAndWait();
+        if (result.isPresent()){
+            class_title = result.get();
+            System.out.println(class_title);
+            online.uploadClassruums(studConnect, class_title);
+        }
+
+        // Get Stage and Scene info
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = window.getScene();
+
+        Hyperlink hyperlink1 = (Hyperlink) scene.lookup("#Classruum1");
+        hyperlink1.setText(class_title);
+
+        window.show();
+    }
+
+    public void uploadResourcesToClassruum(ActionEvent event) throws SQLException, IOException {
+    }
 }

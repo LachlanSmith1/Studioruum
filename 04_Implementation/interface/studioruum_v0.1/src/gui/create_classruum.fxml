@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="183.0" prefWidth="271.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
+   <children>
+      <Label layoutX="56.0" layoutY="35.0" text="create a classruum">
+         <font>
+            <Font name="Segoe UI Semibold" size="19.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txtClassruumName" layoutX="25.0" layoutY="92.0" promptText="classruum title">
+         <font>
+            <Font name="Segoe UI Light" size="12.0" />
+         </font>
+      </TextField>
+      <Button layoutX="193.0" layoutY="92.0" mnemonicParsing="false" onAction="#goClassruumEducator" text="create">
+         <font>
+            <Font name="Segoe UI Light" size="12.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
