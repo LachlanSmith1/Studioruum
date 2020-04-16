@@ -79,7 +79,8 @@ public class Controller
             }
             if(online.uploadUsers(studConnect, username, password, salt)){
                 warning.setText("");
-                goHome(event);
+
+                loginSync(event);
                 online.downloadUsers(studConnect);
             }
             else{
@@ -137,7 +138,7 @@ public class Controller
         }
         if(username.length()>5&&password.length()>5){
             if(online.login(studConnect,username,password)) {
-                goHome(event);
+                loginSync(event);
             }
             else{
                 System.out.println("Invalid username password combo");
@@ -386,6 +387,8 @@ public class Controller
 
                     onlineConnect.close();
                     onlineConnect.close();
+
+                    goHome(event);
 
                 }
                 catch (SQLException ex)
@@ -1493,6 +1496,24 @@ public class Controller
 
             window.show();
         }
+    }
+
+    public void goClassruumScholar(ActionEvent event) throws IOException{
+        Parent dest = FXMLLoader.load(getClass().getResource("classruum_scholar.fxml"));
+        Scene destScene = new Scene(dest);
+        //This line gets the Stage information
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(destScene);
+        window.show();
+    }
+
+    public void goClassruumEducator(ActionEvent event) throws IOException{
+        Parent dest = FXMLLoader.load(getClass().getResource("classruum_educator.fxml"));
+        Scene destScene = new Scene(dest);
+        //This line gets the Stage information
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(destScene);
+        window.show();
     }
 
     public void Scholarselected(MouseEvent event) throws IOException {

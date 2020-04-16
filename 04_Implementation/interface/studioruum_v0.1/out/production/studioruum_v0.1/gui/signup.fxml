@@ -30,7 +30,6 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Button mnemonicParsing="false" onAction="#validSignUp" text="Let's get started!" translateX="75.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
       <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <children>
             <TextField fx:id="logintxt" promptText="Username / Email">
@@ -109,5 +108,18 @@
             </Label>
          </children>
       </HBox>
+      <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+         <children>
+            <Button mnemonicParsing="false" onAction="#validSignUp" text="Let's get started!" translateX="75.0" translateY="20.0" />
+            <Label fx:id="warning" prefHeight="63.0" prefWidth="261.0" textAlignment="CENTER" textFill="RED" textOverrun="CLIP" translateY="8.0" wrapText="true">
+               <font>
+                  <Font name="Segoe UI Bold" size="12.0" />
+               </font>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </Label>
+         </children>
+      </VBox>
    </children>
 </GridPane>
