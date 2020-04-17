@@ -24,8 +24,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-
 
 public class Controller
 {
@@ -89,6 +89,7 @@ public class Controller
             {
 
                 warning.setText("");
+                loginSync(event);
                 goHome(event);
                 online.downloadUsers(studConnect);
 
@@ -173,6 +174,7 @@ public class Controller
             if(online.login(studConnect,username,password))
             {
 
+                loginSync(event);
                 goHome(event);
 
             }
@@ -186,7 +188,7 @@ public class Controller
     }
 
     //Used to Download All Resources Needed For a User to Access the System
-    public void loginSync(ActionEvent event) throws IOException
+    public void logoutSync(ActionEvent event) throws IOException
     {
 
         //IT DOES GET HERE
@@ -208,11 +210,288 @@ public class Controller
 
             onlineConnect = DriverManager.getConnection(host, user, password);
 
+            //Establishes an OFFLINE Connection
+            Connection offlineConnect = null;
+
             if(onlineConnect != null)
             {
 
-                //Preparing a Statement to Download All Resources of a User
+                //Preparing a Statement to Get All Locally Saved Resources
                 PreparedStatement resourceStatement = null;
+
+                try
+                {
+                    Class.forName("org.sqlite.JDBC");
+                    offlineConnect = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
+                }
+                catch(Exception ex)
+                {
+                    System.out.println("Error Connecting to Offline DB: " + ex.getMessage());
+                }
+
+
+                try
+                {
+
+                    //Creating a Prepared Statement
+                    resourceStatement = offlineConnect.prepareStatement("SELECT * FROM resources;");
+
+                    //Gather the Results of the Select
+                    ResultSet resourceResults = resourceStatement.executeQuery();
+
+                    //Preparing Statements to Get All Tables of Resources
+                    PreparedStatement flashcardStatement = null;
+                    PreparedStatement noteStatement = null;
+                    PreparedStatement dictionaryStatement = null;
+                    PreparedStatement quizStatement = null;
+
+                    while(resourceResults.next())
+                    {
+
+                        String resourceID = resourceResults.getString("resource_id");
+
+                        //Gathering All Resources With That ID
+                        flashcardStatement = offlineConnect.prepareStatement("SELECT * FROM flashcards WHERE resource_id = ?;");
+                        flashcardStatement.setString(1, resourceID);
+
+                        noteStatement = offlineConnect.prepareStatement("SELECT * FROM notes WHERE resource_id = ?;");
+                        noteStatement.setString(1, resourceID);
+
+                        dictionaryStatement = offlineConnect.prepareStatement("SELECT * FROM dictionaries WHERE resource_id = ?;");
+                        dictionaryStatement.setString(1, resourceID);
+
+                        quizStatement = offlineConnect.prepareStatement("SELECT * FROM quizzes WHERE resource_id = ?;");
+                        quizStatement.setString(1, resourceID);
+
+                        //Result Sets For All Where There is a Match
+                        ResultSet flashcardResults = flashcardStatement.executeQuery();
+
+                        /*
+                        while(flashcardResults.next())
+                        {
+
+                            System.out.println(flashcardResults.getString("flashcard_id"));
+                            System.out.println(flashcardResults.getString("front_content"));
+                            System.out.println(flashcardResults.getString("back_content"));
+
+                        }
+                        */
+
+                        ResultSet noteResults = noteStatement.executeQuery();
+                        ResultSet dictionaryResults = dictionaryStatement.executeQuery();
+                        ResultSet quizResults = quizStatement.executeQuery();
+
+                        //Insert the Resource ID If Not Present
+                        int resource_id = resourceResults.getInt("resource_id");
+
+                        PreparedStatement pstmt = null;
+
+                        pstmt = onlineConnect.prepareStatement("REPLACE INTO resources VALUES (?, ?, null);");
+                        pstmt.setInt(1, resource_id);
+                        pstmt.setString(2, currentUser);
+                        pstmt.executeUpdate();
+
+                        //
+                        //
+                        //
+                        //
+
+                        if(flashcardResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int flashcard_id = flashcardResults.getInt("flashcard_id");
+                                int dictionary_id = flashcardResults.getInt("dictionary_id");
+                                int quiz_id = flashcardResults.getInt("quiz_id");
+
+                                String front_content = flashcardResults.getString("front_content");
+                                String back_content = flashcardResults.getString("back_content");
+
+                                //THEN UPLOAD
+
+                                String flshSQL = "REPLACE INTO flashcards VALUES (?, ?, ?, ?, ?, ?)";
+                                pstmt = onlineConnect.prepareStatement(flshSQL);
+                                pstmt.setInt(1, flashcard_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setInt(3, dictionary_id);
+                                pstmt.setInt(4, quiz_id);
+                                pstmt.setString(5, front_content);
+                                pstmt.setString(6, back_content);
+
+                                pstmt.executeUpdate();
+
+                            }
+                            while (flashcardResults.next());
+                        }
+
+                        if(noteResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int note_id = noteResults.getInt("note_id");
+
+                                String note_title = noteResults.getString("note_title");
+                                String note_content = noteResults.getString("note_content");
+
+                                //THEN UPLOAD
+
+                                String noteSQL = "REPLACE INTO notes VALUES (?, ?, ?, ?)";
+                                pstmt = onlineConnect.prepareStatement(noteSQL);
+                                pstmt.setInt(1, note_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setString(3, note_title);
+                                pstmt.setString(4, note_content);
+
+                                pstmt.executeUpdate();
+
+                            }
+                            while (noteResults.next());
+                        }
+
+                        if(dictionaryResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int dictionary_id = dictionaryResults.getInt("dictionary_id");
+
+                                String dictionary_name = dictionaryResults.getString("dictionary_name");
+
+                                //THEN UPLOAD
+
+                                String dctnSQL = "REPLACE INTO dictionaries VALUES (?, ?, ?)";
+                                pstmt = onlineConnect.prepareStatement(dctnSQL);
+                                pstmt.setInt(1, dictionary_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setString(3, dictionary_name);
+
+                                pstmt.executeUpdate();
+
+                            }
+                            while (dictionaryResults.next());
+                        }
+
+                        if(quizResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int quiz_id = quizResults.getInt("quiz_id");
+
+                                String quiz_name = quizResults.getString("quiz_name");
+                                String quiz_topic = quizResults.getString("quiz_topic");
+
+                                //THEN UPLOAD
+
+                                String quizSQL = "REPLACE INTO quizzes VALUES (?, ?, ?, ?)";
+                                pstmt = onlineConnect.prepareStatement(quizSQL);
+                                pstmt.setInt(1, quiz_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setString(3, quiz_name);
+                                pstmt.setString(4, quiz_topic);
+
+                                pstmt.executeUpdate();
+
+                            }
+                            while (quizResults.next());
+                        }
+
+                    }
+
+                }
+                catch (SQLException ex)
+                {
+
+                    System.out.println("Error Connecting: " + ex);
+
+                }
+
+            }
+
+        }
+        catch (SQLException ex)
+        {
+
+            System.out.println("An Error Occurred When Connecting to the Database.");
+            ex.printStackTrace();
+
+        }
+        finally
+        {
+
+            //Close The Connection When Finished
+            if (onlineConnect != null)
+            {
+
+                try
+                {
+
+                    onlineConnect.close();
+
+                    //WARNING: CLEARS THE LOCAL DATABASE EACH TIME
+                    /*
+
+                        DELETE ALL SQLITE DATA
+
+                     */
+
+
+                }
+                catch (SQLException ex)
+                {
+
+                    ex.printStackTrace();
+
+                }
+
+            }
+
+        }
+
+    }
+
+    //Used to Upload All Resources When the Program is Closed Via the X
+    public void loginSync(ActionEvent event) throws IOException
+    {
+
+        //Upload the Resources, Flashcards, Dictionaries, Quizzes
+
+        //Establishes an ONLINE Connection
+        Connection onlineConnect = null;
+
+        //The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
+        String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
+
+        //Default Master Username and Password From AWS
+        String user = "group40";
+        String password = "zitozito";
+
+        //Attempting to Connect
+        try
+        {
+
+            onlineConnect = DriverManager.getConnection(host, user, password);
+
+            if(onlineConnect != null)
+            {
+
+                //Preparing a Statement to Upload All Resources of a User
+                PreparedStatement resourceStatement = null;
+
+                //Establishes an OFFLINE Connection
+                Connection offlineConnect = null;
+
+                try
+                {
+                    Class.forName("org.sqlite.JDBC");
+                    offlineConnect = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
+                }
+                catch(Exception ex)
+                {
+                    System.out.println("Error Connecting to Offline DB: " + ex.getMessage());
+                }
 
                 try
                 {
@@ -265,19 +544,6 @@ public class Controller
                         ResultSet noteResults = noteStatement.executeQuery();
                         ResultSet dictionaryResults = dictionaryStatement.executeQuery();
                         ResultSet quizResults = quizStatement.executeQuery();
-
-                        //Establishes an OFFLINE Connection
-                        Connection offlineConnect = null;
-
-                        try
-                        {
-                            Class.forName("org.sqlite.JDBC");
-                            offlineConnect = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
-                        }
-                        catch(Exception ex)
-                        {
-                            System.out.println("Error Connecting to Offline DB: " + ex.getMessage());
-                        }
 
                         //Insert the Resource ID If Not Present
                         int resource_id = resourceResults.getInt("resource_id");
@@ -463,8 +729,6 @@ public class Controller
     public void goHome(ActionEvent event) throws IOException
     {
 
-        loginSync(event);
-
         Parent dest = FXMLLoader.load(getClass().getResource("home.fxml"));
         Scene destScene = new Scene(dest);
 
@@ -472,6 +736,25 @@ public class Controller
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -507,6 +790,25 @@ public class Controller
 
         // Finally display window
         window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -589,6 +891,26 @@ public class Controller
             alert.showAndWait();
 
         }
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Displays flashcard front content after user selects flashcard
@@ -637,6 +959,25 @@ public class Controller
             nextFlash.setDisable(true);
         }
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Flips flashcard content
@@ -663,6 +1004,25 @@ public class Controller
         {
             flashContent.setText(selected.frontProperty().getValue());
         }
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -700,6 +1060,26 @@ public class Controller
             prevFlash.setDisable(true);
 
         }
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Adds functionality to "Next" button in flashcards page
@@ -737,6 +1117,25 @@ public class Controller
             nextFlash.setDisable(true);
 
         }
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -831,6 +1230,26 @@ public class Controller
 
             }
         }
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Takes user to create_flashcard page, specifies operation to be executed
@@ -859,6 +1278,25 @@ public class Controller
 
         // Finally display window
         window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -898,6 +1336,25 @@ public class Controller
         // Finally display window
         window.show();
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Adds functionality to "Save" button in create_flashcard page
@@ -932,8 +1389,6 @@ public class Controller
             locDB.saveFlashcard(dictId, frontContent, backContent);
 
         }
-
-
         else
         {
 
@@ -968,6 +1423,25 @@ public class Controller
 
         // Return to view_flashcard page
         returnToFlashcard(event, dictId, flashId);
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1109,6 +1583,26 @@ public class Controller
 
         //Finally show window
         window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Called to prepare Dictionary page
@@ -1145,6 +1639,25 @@ public class Controller
         // Finally display window
         window.show();
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Columns for table in dictionary page (need to be global objects)
@@ -1180,6 +1693,25 @@ public class Controller
         updateDict.setVisible(true);
         Button deleteDict = (Button) scene.lookup("#deleteDict");
         deleteDict.setVisible(true);
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1227,6 +1759,26 @@ public class Controller
             alert.showAndWait();
 
         }
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Updates record of user select note in local db
@@ -1254,6 +1806,25 @@ public class Controller
             locDB.updateDictionary(dictId, result.get());
             goDictionary(event);
         }
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1302,6 +1873,25 @@ public class Controller
             }
         }
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Called to prepare Notes page
@@ -1338,6 +1928,25 @@ public class Controller
         // Finally display window
         window.show();
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Displays selected Note in TextField and TextArea of the notes page
@@ -1364,6 +1973,25 @@ public class Controller
         Button updateNote = (Button) scene.lookup("#updateNote");
         updateNote.setVisible(true);
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Makes the note title and the note content editable when "Edit" button clicked
@@ -1381,6 +2009,25 @@ public class Controller
         // Lookup in the Scene for TextArea (note content) and make it editable
         TextArea noteContent = (TextArea) scene.lookup("#noteContent");
         noteContent.setEditable(true);
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1430,6 +2077,26 @@ public class Controller
             alert.showAndWait();
 
         }
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     // Saves the note as a new note in local DB
@@ -1451,6 +2118,25 @@ public class Controller
         // Save note and reload window
         locDB.saveNote(title, content);
         goNotes(event);
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1491,6 +2177,25 @@ public class Controller
 
         }
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     public void goBack(ActionEvent event) throws IOException
@@ -1502,6 +2207,25 @@ public class Controller
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1515,6 +2239,25 @@ public class Controller
         window.setScene(destScene);
         window.show();
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     public void goForuum(ActionEvent event) throws IOException
@@ -1527,17 +2270,43 @@ public class Controller
         window.setScene(destScene);
         window.show();
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
-    public void goClassruum(ActionEvent event) throws IOException {
-        if (accountType == "scholar") {
+    public void goClassruum(ActionEvent event) throws IOException
+    {
+        if (accountType == "scholar")
+        {
+
             Parent dest = FXMLLoader.load(getClass().getResource("classruum_scholar.fxml"));
             Scene destScene = new Scene(dest);
             //This line gets the Stage information
             Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
             window.setScene(destScene);
             window.show();
-        } else {
+
+        }
+        else
+        {
+
             Parent dest = FXMLLoader.load(getClass().getResource("classruum_educator.fxml"));
             Scene destScene = new Scene(dest);
 
@@ -1554,17 +2323,42 @@ public class Controller
             // Updates item in ComboBox to show only their title instead of their full instance
             Callback<ListView<Resource>, ListCell<Resource>> factory = lv -> new ListCell<Resource>()
             {
+
                 @Override
-                protected void updateItem(Resource item, boolean empty) {
+                protected void updateItem(Resource item, boolean empty)
+                {
+
                     super.updateItem(item, empty);
                     setText(empty ? "" : item.getTitle());
+
                 }
+
             };
 
             resourceDropDown.setCellFactory(factory);
             resourceDropDown.setButtonCell(factory.call(null));
 
             window.show();
+
+            //Upload All Resources When the File is Closed
+            window.setOnCloseRequest((WindowEvent ev) ->
+            {
+
+                try
+                {
+
+                    logoutSync(event);
+
+                }
+                catch (IOException e)
+                {
+
+                    e.printStackTrace();
+
+                }
+
+            });
+
         }
     }
 
@@ -1578,6 +2372,25 @@ public class Controller
         window.setScene(destScene);
         window.show();
 
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     public void goClassruumEducator(ActionEvent event) throws IOException
@@ -1589,6 +2402,25 @@ public class Controller
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1699,7 +2531,26 @@ public class Controller
         String username = user;
         String time_updated = dtf.format(now);
 
-         online.uploadComment(comment_id, forum_id, comment_content, username, time_updated);*/
+        online.uploadComment(comment_id, forum_id, comment_content, username, time_updated);*/
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1712,6 +2563,26 @@ public class Controller
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
 
@@ -1728,6 +2599,25 @@ public class Controller
         Hyperlink hyperlink1 = (Hyperlink) scene.lookup("#FAQ1");
 
         //hyperlink1.setText(forum_title);
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
 
     }
 
@@ -1756,10 +2646,32 @@ public class Controller
         //hyperlink1.setText(class_title);
 
         window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+
+            try
+            {
+
+                logoutSync(event);
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+
+            }
+
+        });
+
     }
 
     public void uploadResourcesToClassruum(ActionEvent event) throws SQLException, IOException
     {
+
+
 
     }
 
