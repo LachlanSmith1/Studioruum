@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
@@ -27,6 +28,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
+import javax.swing.*;
+
 public class Controller
 {
 
@@ -35,7 +38,7 @@ public class Controller
     ////
 
     public String accountType="";
-    public String currentUser="lloyd";
+    public String username="";
     public OnlineSync online = new OnlineSync();
 
     LocalDB locDB = new LocalDB();
@@ -61,7 +64,7 @@ public class Controller
         TextField uname = (TextField) scene.lookup("#logintxt");
         TextField psswrd = (TextField) scene.lookup("#passwordtxt");
         TextField Repsswrd = (TextField) scene.lookup("#Repasswordtxt");
-        String username = uname.getText().toLowerCase();
+        username = uname.getText().toLowerCase();
         String password = psswrd.getText();
         String Repassword = Repsswrd.getText();
 
@@ -2263,12 +2266,15 @@ public class Controller
     public void goForuum(ActionEvent event) throws IOException
     {
 
+		Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = window.getScene();
         Parent dest = FXMLLoader.load(getClass().getResource("foruum.fxml"));
         Scene destScene = new Scene(dest);
         //This line gets the Stage information
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+        online.downloadForuum();
+        online.downloadComment();
 
         //Upload All Resources When the File is Closed
         window.setOnCloseRequest((WindowEvent ev) ->
@@ -2289,6 +2295,104 @@ public class Controller
 
         });
 
+    }
+
+	public void goForuumRelatedPage(ActionEvent event) throws IOException, SQLException {
+        // Here we need to make it so when the user clicks a hyperlink, that related page shows up
+        // where all the labels what are on the home screen are changed to the comment contents
+        // related to that forum_id.
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = window.getScene();
+        // Here i have initialised all of the hyperlinks so whichever one is clicked the forum_id changes to that.
+        // Inside of the handle function of each hyperlink we can edit the variables.
+        Hyperlink chem = (Hyperlink) scene.lookup("#chemistry");
+        chem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 1;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink bio = (Hyperlink) scene.lookup("#biology");
+        bio.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 2;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink phys = (Hyperlink) scene.lookup("#physics");
+        phys.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 3;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink compsci = (Hyperlink) scene.lookup("#compsci");
+        compsci.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 4;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink maths = (Hyperlink) scene.lookup("#maths");
+        maths.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 5;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink eng = (Hyperlink) scene.lookup("#english");
+        eng.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 6;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink rs = (Hyperlink) scene.lookup("#rs");
+        rs.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 7;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink bus = (Hyperlink) scene.lookup("#business");
+        bus.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 8;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink pe = (Hyperlink) scene.lookup("#pe");
+        pe.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 9;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink history = (Hyperlink) scene.lookup("#history");
+        history.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 10;
+                System.out.println(forum_id);
+            }
+        });
+        Hyperlink geo = (Hyperlink) scene.lookup("#geography");
+        geo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                int forum_id = 11;
+                System.out.println(forum_id);
+            }
+        });
     }
 
     public void goClassruum(ActionEvent event) throws IOException

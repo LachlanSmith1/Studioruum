@@ -20,10 +20,13 @@
 package gui;
 
 //Import Statements For JDBC and Etc.
+import jdk.jfr.Label;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.MessageDigest;
@@ -874,53 +877,53 @@ public class OnlineSync
 		}
 	}
 
-	public void downloadForuum(Connection studConnect) throws SQLException {
-		System.out.println("Attempting to Show All Values in the Table ~foruums~.");
+	public void downloadForuum() throws SQLException 
+	{
+	System.out.println("Attempting to Show All Values in the Table ~foruums~.");
 
-		//Declaring the Statement to Be Used
-		PreparedStatement statement = null;
+	//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
+	String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
 
-		try
-		{
+	//Default Master Username and Password From AWS
+	String user = "group40";
+	String password = "zitozito";
+
+
+	//Declaring the Statement to Be Used
+	PreparedStatement statement = null;
+
+	Connection connection = DriverManager.getConnection(host, user, password);
+
+
+		try {
 
 			//Creating a Prepared Statement
-			statement = studConnect.prepareStatement("SELECT * FROM foruums;");
-
+			statement = connection.prepareStatement("SELECT * FROM foruums;");
 			//Gather the Results of the Select
 			ResultSet rs = statement.executeQuery();
-
 			//Print Out Each Result
-			while(rs.next())
-			{
+			while (rs.next()) {
 
 				int forum_id = rs.getInt("forum_id");
 				int class_id = rs.getInt("class_id");
 				String forum_title = rs.getString("forum_title");
 
-				System.out.println(Integer.toString(forum_id) + Integer.toString(class_id) + (forum_title));
+				//System.out.println("Foruums downloaded");
 
 			}
 
 
-
-		}
-		catch (SQLException ex)
-		{
+		} catch (SQLException ex) {
 
 			System.out.println("Error Connecting: " + ex);
 
-		}
-		finally
-		{
+		} finally {
 
-			try
-			{
+			try {
 
 				statement.close();
 
-			}
-			catch (SQLException ex)
-			{
+			} catch (SQLException ex) {
 
 				System.out.println("Error Closing: " + ex);
 
@@ -999,17 +1002,27 @@ public class OnlineSync
 		}
 	}
 
-	public void downloadComment(Connection studConnect) {
+	public void downloadComment() throws SQLException {
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
+
+		//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
+		String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
+
+		//Default Master Username and Password From AWS
+		String user = "group40";
+		String password = "zitozito";
+
 
 		//Declaring the Statement to Be Used
 		PreparedStatement statement = null;
+
+		Connection connection = DriverManager.getConnection(host, user, password);
 
 		try
 		{
 
 			//Creating a Prepared Statement
-			statement = studConnect.prepareStatement("SELECT * FROM comments;");
+			statement = connection.prepareStatement("SELECT * FROM comments;");
 
 			//Gather the Results of the Select
 			ResultSet rs = statement.executeQuery();
@@ -1024,7 +1037,7 @@ public class OnlineSync
 				String username = rs.getString("username");
 				String time_updated = rs.getString("time_updated");
 
-				System.out.println(Integer.toString(comment_id) + Integer.toString(forum_id) + comment_content + username + time_updated);
+				//System.out.println("Comments downloaded");
 
 			}
 
