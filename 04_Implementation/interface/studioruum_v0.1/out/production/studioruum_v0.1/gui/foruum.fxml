@@ -1,28 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"  fx:controller="gui.Controller">
+<AnchorPane prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
       <Button layoutX="30.0" layoutY="35.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="Back" />
       <Button layoutX="94.0" layoutY="35.0" mnemonicParsing="false" onAction="#goHome" prefHeight="25.0" prefWidth="50.0" text="Home" />
-      <Label layoutX="228.0" layoutY="60.0" text="foruum">
+      <Label layoutX="328.0" layoutY="60.0" text="foruum">
          <font>
             <Font name="Segoe UI Semibold" size="43.0" />
          </font>
       </Label>
-      <Label layoutX="83.0" layoutY="200.0" text="Most popular Subjects:" />
-      <Label layoutX="260.0" layoutY="202.0" text="Most popular Questions:" />
-      <Label layoutX="443.0" layoutY="142.0" text="Personal:" />
-      <Button layoutX="472.0" layoutY="207.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Share" />
-      <Button layoutX="472.0" layoutY="249.0" mnemonicParsing="false" text="Upload" />
-      <ChoiceBox layoutX="83.0" layoutY="234.0" prefHeight="25.0" prefWidth="122.0" />
-      <ChoiceBox layoutX="260.0" layoutY="236.0" prefHeight="25.0" prefWidth="131.0" />
-      <TextField layoutX="45.0" layoutY="130.0" prefHeight="25.0" prefWidth="534.0" promptText="Search..." />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffe7d1" height="443.0" layoutX="6.0" layoutY="194.0" stroke="WHITE" strokeType="INSIDE" width="200.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffe7d1" height="6.0" layoutX="300.0" layoutY="112.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" width="200.0" />
+      <Label layoutX="55.0" layoutY="202.0" prefHeight="17.0" prefWidth="172.0" text="Subjects:">
+         <font>
+            <Font name="System Bold" size="26.0" />
+         </font>
+      </Label>
+      <VBox layoutX="8.0" layoutY="240.0" prefHeight="423.0" prefWidth="172.0">
+         <children>
+            <Hyperlink fx:id="chemistry" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Chemistry" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="biology" layoutX="10.0" layoutY="10.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Biology" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="physics" layoutX="10.0" layoutY="45.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Physics" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="compsci" layoutX="10.0" layoutY="80.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Computer Science" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="maths" layoutX="10.0" layoutY="115.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Maths" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="english" layoutX="10.0" layoutY="150.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="English" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="rs" layoutX="10.0" layoutY="185.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Religious Studies" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="business" layoutX="10.0" layoutY="220.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Business" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="pe" layoutX="10.0" layoutY="255.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Physical Education" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="history" layoutX="10.0" layoutY="290.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="History" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="geography" layoutX="10.0" layoutY="325.0" onAction="#goForuumRelatedPage" prefHeight="23.0" prefWidth="172.0" text="Geography" textFill="#030303">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Hyperlink>
+         </children></VBox>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffe7d1" height="554.0" layoutX="229.0" layoutY="194.0" stroke="WHITE" strokeType="INSIDE" width="532.0" />
+      <Label fx:id="forumTitle" layoutX="248.0" layoutY="202.0" prefHeight="17.0" prefWidth="172.0" text="Forum Title">
+         <font>
+            <Font name="System Bold" size="26.0" />
+         </font>
+      </Label>
+      <VBox layoutX="248.0" layoutY="240.0" prefHeight="408.0" prefWidth="477.0">
+         <children>
+            <Label text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="10.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="37.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="64.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="91.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="118.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="145.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="172.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="199.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="226.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="253.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="280.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="307.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="334.0" text="Comment">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+         </children></VBox>
+      <TextArea layoutX="242.0" layoutY="663.0" prefHeight="64.0" prefWidth="185.0" promptText="Your comment..." />
+      <Button layoutX="474.0" layoutY="683.0" mnemonicParsing="false" text="Comment" />
    </children>
 </AnchorPane>

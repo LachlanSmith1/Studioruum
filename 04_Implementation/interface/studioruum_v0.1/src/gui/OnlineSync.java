@@ -21,6 +21,8 @@ package gui;
 
 //Import Statements For JDBC and Etc.
 import jdk.jfr.Label;
+
+import java.io.IOException;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -810,6 +812,31 @@ public class OnlineSync
 			}
 
 		}
+	}
+
+	public void downloadClassResources(Connection studConnect, String currentUser, int educators_id) throws SQLException, IOException {
+		try
+		{
+			PreparedStatement statement = studConnect.prepareStatement("SELECT resource_id FROM resource_owner WHERE resource_owner = ?");
+			statement.setInt(1, educators_id);
+
+			// get the resource's which have the educators id
+			ResultSet rs = statement.executeQuery();
+
+			//
+			while(rs.next()) {
+				int resource_id = rs.getInt("resource_id");
+				PreparedStatement statement2 = studConnect.prepareStatement("INSERT INTO resource_owner VALUES(?, ?);");
+				statement2.setInt(1, resource_id);
+				//statement2.setInt(2, username);
+			}
+		}
+		catch (SQLException ex)
+		{
+			System.out.println("Error Connecting: " + ex);
+		}
+
+
 	}
 
 	//////////////////////////

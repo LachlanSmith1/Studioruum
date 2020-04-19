@@ -289,44 +289,11 @@ public class Controller
 
                         PreparedStatement pstmt = null;
 
-                        pstmt = onlineConnect.prepareStatement("REPLACE INTO resources VALUES (?, ?, null);");
-                        pstmt.setInt(1, resource_id);
-                        pstmt.setString(2, currentUser);
-                        pstmt.executeUpdate();
-
                         //
                         //
                         //
                         //
 
-                        if(flashcardResults.next() != false)
-                        {
-                            do
-                            {
-
-                                int flashcard_id = flashcardResults.getInt("flashcard_id");
-                                int dictionary_id = flashcardResults.getInt("dictionary_id");
-                                int quiz_id = flashcardResults.getInt("quiz_id");
-
-                                String front_content = flashcardResults.getString("front_content");
-                                String back_content = flashcardResults.getString("back_content");
-
-                                //THEN UPLOAD
-
-                                String flshSQL = "REPLACE INTO flashcards VALUES (?, ?, ?, ?, ?, ?)";
-                                pstmt = onlineConnect.prepareStatement(flshSQL);
-                                pstmt.setInt(1, flashcard_id);
-                                pstmt.setInt(2, resource_id);
-                                pstmt.setInt(3, dictionary_id);
-                                pstmt.setInt(4, quiz_id);
-                                pstmt.setString(5, front_content);
-                                pstmt.setString(6, back_content);
-
-                                pstmt.executeUpdate();
-
-                            }
-                            while (flashcardResults.next());
-                        }
 
                         if(noteResults.next() != false)
                         {
@@ -353,29 +320,6 @@ public class Controller
                             while (noteResults.next());
                         }
 
-                        if(dictionaryResults.next() != false)
-                        {
-                            do
-                            {
-
-                                int dictionary_id = dictionaryResults.getInt("dictionary_id");
-
-                                String dictionary_name = dictionaryResults.getString("dictionary_name");
-
-                                //THEN UPLOAD
-
-                                String dctnSQL = "REPLACE INTO dictionaries VALUES (?, ?, ?)";
-                                pstmt = onlineConnect.prepareStatement(dctnSQL);
-                                pstmt.setInt(1, dictionary_id);
-                                pstmt.setInt(2, resource_id);
-                                pstmt.setString(3, dictionary_name);
-
-                                pstmt.executeUpdate();
-
-                            }
-                            while (dictionaryResults.next());
-                        }
-
                         if(quizResults.next() != false)
                         {
                             do
@@ -399,6 +343,94 @@ public class Controller
 
                             }
                             while (quizResults.next());
+                        }
+
+                        if(flashcardResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int flashcard_id = flashcardResults.getInt("flashcard_id");
+
+                                int dictionary_id = flashcardResults.getInt("dictionary_id");
+
+                                int quiz_id = flashcardResults.getInt("quiz_id");
+
+                                String front_content = flashcardResults.getString("front_content");
+                                String back_content = flashcardResults.getString("back_content");
+
+                                //THEN UPLOAD
+
+                                try
+                                {
+
+                                    String flshSQL = "REPLACE INTO flashcards VALUES (?, ?, ?, ?, ?, ?)";
+                                    pstmt = onlineConnect.prepareStatement(flshSQL);
+                                    pstmt.setInt(1, flashcard_id);
+                                    pstmt.setInt(2, resource_id);
+                                    pstmt.setInt(3, dictionary_id);
+
+                                    pstmt.setInt(4, quiz_id);
+
+                                    pstmt.setString(5, front_content);
+                                    pstmt.setString(6, back_content);
+
+                                    pstmt.executeUpdate();
+
+                                }
+                                catch(SQLIntegrityConstraintViolationException ex)
+                                {
+
+                                    String flshSQL = "REPLACE INTO flashcards (flashcard_id, resource_id, dictionary_id, front_content, back_content) VALUES (?, ?, ?, ?, ?)";
+                                    pstmt = onlineConnect.prepareStatement(flshSQL);
+                                    pstmt.setInt(1, flashcard_id);
+                                    pstmt.setInt(2, resource_id);
+                                    pstmt.setInt(3, dictionary_id);
+
+                                    pstmt.setString(4, front_content);
+                                    pstmt.setString(5, back_content);
+
+                                    pstmt.executeUpdate();
+
+                                }
+
+                            }
+                            while (flashcardResults.next());
+                        }
+
+                        pstmt = onlineConnect.prepareStatement("REPLACE INTO resources VALUES (?, ?, null);");
+
+                        pstmt.setInt(1, resource_id);
+                        pstmt.setString(2, username);
+                        pstmt.executeUpdate();
+
+                        if(dictionaryResults.next() != false)
+                        {
+                            do
+                            {
+
+                                int dictionary_id = dictionaryResults.getInt("dictionary_id");
+
+                                String dictionary_name = dictionaryResults.getString("dictionary_name");
+
+                                //THEN UPLOAD
+
+                                PreparedStatement disableStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS=0;");
+                                disableStatement.executeUpdate();
+
+                                String dctnSQL = "REPLACE INTO dictionaries VALUES (?, ?, ?)";
+                                pstmt = onlineConnect.prepareStatement(dctnSQL);
+                                pstmt.setInt(1, dictionary_id);
+                                pstmt.setInt(2, resource_id);
+                                pstmt.setString(3, dictionary_name);
+
+                                pstmt.executeUpdate();
+
+                                PreparedStatement enableStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS=1;");
+                                enableStatement.executeUpdate();
+
+                            }
+                            while (dictionaryResults.next());
                         }
 
                     }
@@ -501,7 +533,7 @@ public class Controller
 
                     //Creating a Prepared Statement
                     resourceStatement = onlineConnect.prepareStatement("SELECT resource_id, time_updated FROM resources WHERE username = ?;");
-                    resourceStatement.setString(1, currentUser);
+                    resourceStatement.setString(1, username);
 
                     //Gather the Results of the Select
                     ResultSet resourceResults = resourceStatement.executeQuery();
@@ -2263,8 +2295,7 @@ public class Controller
 
     }
 
-    public void goForuum(ActionEvent event) throws IOException
-    {
+    public void goForuum(ActionEvent event) throws IOException, SQLException {
 
 		Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -2739,7 +2770,7 @@ public class Controller
         if (result.isPresent()){
             class_title = result.get();
             System.out.println(class_title);
-            online.uploadClassruums(studConnect, class_title);
+            // online.uploadClassruum(studConnect, currentUser, educator_id);
         }
 
         // Get Stage and Scene info
