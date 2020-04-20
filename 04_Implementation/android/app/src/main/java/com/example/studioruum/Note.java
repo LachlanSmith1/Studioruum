@@ -1,11 +1,7 @@
 package com.example.studioruum;
 
-public class Note extends Resource
-{
+public class Note extends Resource {
     private int noteID;
-
-    //Replaced by com.example.studioruum.Resource.resourceName
-    //private String noteTitle;
 
     //This will be what the user writes
     private String noteContent;
@@ -15,7 +11,6 @@ public class Note extends Resource
         super(rID, title);
         noteID = nID;
         noteContent = content;
-
     }
 
     // Getter and setter for noteID
@@ -23,7 +18,9 @@ public class Note extends Resource
         return noteID;
     }
 
-    public void setDict(int ID) { this.noteID = ID; }
+    public void setDict(int ID) {
+        this.noteID = ID;
+    }
 
     // Getter and setter for noteContent
     public String getContent() {
