@@ -69,7 +69,7 @@ public class Controller
         String Repassword = Repsswrd.getText();
 
 
-        if (password.equals(Repassword)&&password.length()>5&&accountType!="")
+        if (password.equals(Repassword)&&password.length()>5&&password.matches(".*\\d.*")&&password.matches(".*[A-Z].*")&&accountType!="")
         {
 
             studConnect = online.Connect();
@@ -289,11 +289,132 @@ public class Controller
 
                         PreparedStatement pstmt = null;
 
-                        //
-                        //
-                        //
-                        //
+                        PreparedStatement keyStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
+                        keyStatement.executeUpdate();
 
+                        pstmt = onlineConnect.prepareStatement("REPLACE INTO resources VALUES (?, ?, null);");
+
+                        //THIS IS THE ERROR - EXECUTION
+                        pstmt.setInt(1, resource_id);
+                        pstmt.setString(2, username);
+                        pstmt.executeUpdate();
+
+                        keyStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
+                        keyStatement.executeUpdate();
+
+                        if(dictionaryResults.next() != false)
+                        {
+                            do
+                            {
+
+                                PreparedStatement dpstmt = null;
+
+                                int dictionary_id = dictionaryResults.getInt("dictionary_id");
+
+                                String dictionary_name = dictionaryResults.getString("dictionary_name");
+
+                                //THEN UPLOAD
+
+                                PreparedStatement disableStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS=0;");
+                                disableStatement.executeUpdate();
+
+                                String dctnSQL = "REPLACE INTO dictionaries VALUES (?, ?, ?)";
+                                dpstmt = onlineConnect.prepareStatement(dctnSQL);
+                                dpstmt.setInt(1, dictionary_id);
+                                dpstmt.setInt(2, resource_id);
+                                dpstmt.setString(3, dictionary_name);
+
+                                dpstmt.executeUpdate();
+
+                                PreparedStatement enableStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS=1;");
+                                enableStatement.executeUpdate();
+
+
+                            }
+                            while (dictionaryResults.next());
+                        }
+
+                        if(quizResults.next() != false)
+                        {
+                            do
+                            {
+
+                                PreparedStatement qpstmt = null;
+
+                                int quiz_id = quizResults.getInt("quiz_id");
+
+                                String quiz_name = quizResults.getString("quiz_name");
+                                String quiz_topic = quizResults.getString("quiz_topic");
+
+                                //THEN UPLOAD
+
+                                String quizSQL = "REPLACE INTO quizzes VALUES (?, ?, ?, ?)";
+                                qpstmt = onlineConnect.prepareStatement(quizSQL);
+                                qpstmt.setInt(1, quiz_id);
+                                qpstmt.setInt(2, resource_id);
+                                qpstmt.setString(3, quiz_name);
+                                qpstmt.setString(4, quiz_topic);
+
+                                qpstmt.executeUpdate();
+
+                            }
+                            while (quizResults.next());
+                        }
+
+                        if(flashcardResults.next() != false)
+                        {
+                            do
+                            {
+
+                                PreparedStatement fpstmt = null;
+
+                                int flashcard_id = flashcardResults.getInt("flashcard_id");
+
+                                int dictionary_id = flashcardResults.getInt("dictionary_id");
+
+                                int quiz_id = flashcardResults.getInt("quiz_id");
+
+                                String front_content = flashcardResults.getString("front_content");
+                                String back_content = flashcardResults.getString("back_content");
+
+                                //THEN UPLOAD
+
+                                try
+                                {
+
+                                    String flshSQL = "REPLACE INTO flashcards VALUES (?, ?, ?, ?, ?, ?)";
+                                    fpstmt = onlineConnect.prepareStatement(flshSQL);
+                                    fpstmt.setInt(1, flashcard_id);
+                                    fpstmt.setInt(2, resource_id);
+                                    fpstmt.setInt(3, dictionary_id);
+
+                                    fpstmt.setInt(4, quiz_id);
+
+                                    fpstmt.setString(5, front_content);
+                                    fpstmt.setString(6, back_content);
+
+                                    fpstmt.executeUpdate();
+
+                                }
+                                catch(SQLIntegrityConstraintViolationException ex)
+                                {
+
+                                    String flshSQL = "REPLACE INTO flashcards (flashcard_id, resource_id, dictionary_id, front_content, back_content) VALUES (?, ?, ?, ?, ?)";
+                                    fpstmt = onlineConnect.prepareStatement(flshSQL);
+                                    fpstmt.setInt(1, flashcard_id);
+                                    fpstmt.setInt(2, resource_id);
+                                    fpstmt.setInt(3, dictionary_id);
+
+                                    fpstmt.setString(4, front_content);
+                                    fpstmt.setString(5, back_content);
+
+                                    fpstmt.executeUpdate();
+
+                                }
+
+                            }
+                            while (flashcardResults.next());
+                        }
 
                         if(noteResults.next() != false)
                         {
@@ -320,124 +441,13 @@ public class Controller
                             while (noteResults.next());
                         }
 
-                        if(quizResults.next() != false)
-                        {
-                            do
-                            {
-
-                                int quiz_id = quizResults.getInt("quiz_id");
-
-                                String quiz_name = quizResults.getString("quiz_name");
-                                String quiz_topic = quizResults.getString("quiz_topic");
-
-                                //THEN UPLOAD
-
-                                String quizSQL = "REPLACE INTO quizzes VALUES (?, ?, ?, ?)";
-                                pstmt = onlineConnect.prepareStatement(quizSQL);
-                                pstmt.setInt(1, quiz_id);
-                                pstmt.setInt(2, resource_id);
-                                pstmt.setString(3, quiz_name);
-                                pstmt.setString(4, quiz_topic);
-
-                                pstmt.executeUpdate();
-
-                            }
-                            while (quizResults.next());
-                        }
-
-                        if(flashcardResults.next() != false)
-                        {
-                            do
-                            {
-
-                                int flashcard_id = flashcardResults.getInt("flashcard_id");
-
-                                int dictionary_id = flashcardResults.getInt("dictionary_id");
-
-                                int quiz_id = flashcardResults.getInt("quiz_id");
-
-                                String front_content = flashcardResults.getString("front_content");
-                                String back_content = flashcardResults.getString("back_content");
-
-                                //THEN UPLOAD
-
-                                try
-                                {
-
-                                    String flshSQL = "REPLACE INTO flashcards VALUES (?, ?, ?, ?, ?, ?)";
-                                    pstmt = onlineConnect.prepareStatement(flshSQL);
-                                    pstmt.setInt(1, flashcard_id);
-                                    pstmt.setInt(2, resource_id);
-                                    pstmt.setInt(3, dictionary_id);
-
-                                    pstmt.setInt(4, quiz_id);
-
-                                    pstmt.setString(5, front_content);
-                                    pstmt.setString(6, back_content);
-
-                                    pstmt.executeUpdate();
-
-                                }
-                                catch(SQLIntegrityConstraintViolationException ex)
-                                {
-
-                                    String flshSQL = "REPLACE INTO flashcards (flashcard_id, resource_id, dictionary_id, front_content, back_content) VALUES (?, ?, ?, ?, ?)";
-                                    pstmt = onlineConnect.prepareStatement(flshSQL);
-                                    pstmt.setInt(1, flashcard_id);
-                                    pstmt.setInt(2, resource_id);
-                                    pstmt.setInt(3, dictionary_id);
-
-                                    pstmt.setString(4, front_content);
-                                    pstmt.setString(5, back_content);
-
-                                    pstmt.executeUpdate();
-
-                                }
-
-                            }
-                            while (flashcardResults.next());
-                        }
-
-                        pstmt = onlineConnect.prepareStatement("REPLACE INTO resources VALUES (?, ?, null);");
-
-                        pstmt.setInt(1, resource_id);
-                        pstmt.setString(2, username);
-                        pstmt.executeUpdate();
-
-                        if(dictionaryResults.next() != false)
-                        {
-                            do
-                            {
-
-                                int dictionary_id = dictionaryResults.getInt("dictionary_id");
-
-                                String dictionary_name = dictionaryResults.getString("dictionary_name");
-
-                                //THEN UPLOAD
-
-                                PreparedStatement disableStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS=0;");
-                                disableStatement.executeUpdate();
-
-                                String dctnSQL = "REPLACE INTO dictionaries VALUES (?, ?, ?)";
-                                pstmt = onlineConnect.prepareStatement(dctnSQL);
-                                pstmt.setInt(1, dictionary_id);
-                                pstmt.setInt(2, resource_id);
-                                pstmt.setString(3, dictionary_name);
-
-                                pstmt.executeUpdate();
-
-                                PreparedStatement enableStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS=1;");
-                                enableStatement.executeUpdate();
-
-                            }
-                            while (dictionaryResults.next());
-                        }
-
                     }
 
                 }
                 catch (SQLException ex)
                 {
+
+                    ex.printStackTrace();
 
                     System.out.println("Error Connecting: " + ex);
 
@@ -463,15 +473,39 @@ public class Controller
                 try
                 {
 
+                    System.out.println("THIS IS JUST BEFORE THE LOCAL CLEAR");
+
                     onlineConnect.close();
 
                     //WARNING: CLEARS THE LOCAL DATABASE EACH TIME
-                    /*
 
-                        DELETE ALL SQLITE DATA
+                    Connection offlineConnect = null;
 
-                     */
+                    try
+                    {
+                        Class.forName("org.sqlite.JDBC");
+                        offlineConnect = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
 
+                        PreparedStatement rsrcClear = offlineConnect.prepareStatement("DELETE FROM resources;");
+                        PreparedStatement noteClear = offlineConnect.prepareStatement("DELETE FROM notes;");
+                        PreparedStatement dictClear = offlineConnect.prepareStatement("DELETE FROM dictionaries;");
+                        PreparedStatement quizClear = offlineConnect.prepareStatement("DELETE FROM quizzes;");
+                        PreparedStatement flshClear = offlineConnect.prepareStatement("DELETE FROM flashcards;");
+
+                        rsrcClear.executeUpdate();
+                        noteClear.executeUpdate();
+                        dictClear.executeUpdate();
+                        quizClear.executeUpdate();
+                        flshClear.executeUpdate();
+
+                    }
+                    catch(Exception ex)
+                    {
+                        System.out.println("Error Connecting to Offline DB: ");
+                        ex.printStackTrace();
+                    }
+
+                    System.out.println("THIS IS JUST AFTER THE LOCAL CLEAR");
 
                 }
                 catch (SQLException ex)
@@ -532,7 +566,7 @@ public class Controller
                 {
 
                     //Creating a Prepared Statement
-                    resourceStatement = onlineConnect.prepareStatement("SELECT resource_id, time_updated FROM resources WHERE username = ?;");
+                    resourceStatement = onlineConnect.prepareStatement("SELECT resource_id FROM resources WHERE username = ?;");
                     resourceStatement.setString(1, username);
 
                     //Gather the Results of the Select
