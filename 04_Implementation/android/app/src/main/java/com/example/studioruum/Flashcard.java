@@ -55,4 +55,8 @@ public class Flashcard extends Resource {
         this.dictionaryID = ID;
     }
 
+    @Override
+    public String toString() {
+        return frontProperty();
+    }
 }

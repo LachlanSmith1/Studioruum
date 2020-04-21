@@ -27,7 +27,9 @@ public class Note extends Resource {
         return noteContent;
     }
 
-    public void setContent(String content) { this.noteContent = content; }
+    public void setContent(String content) {
+        this.noteContent = content;
+    }
 
     @Override
     public String toString() {

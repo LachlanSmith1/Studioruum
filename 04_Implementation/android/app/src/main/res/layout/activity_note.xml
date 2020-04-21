@@ -121,9 +121,11 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="Notes"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="36sp"
+        app:fontFamily="@font/open_sans_semibold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

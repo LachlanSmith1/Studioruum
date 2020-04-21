@@ -331,7 +331,6 @@ public class LocalDB extends SQLiteOpenHelper {
                 int flashcardId = rs.getInt(rs.getColumnIndexOrThrow("flashcard_id"));
                 int resourceId = rs.getInt(rs.getColumnIndexOrThrow("resource_id"));
                 int dictionaryId = rs.getInt(rs.getColumnIndexOrThrow("dictionary_id"));
-                int quizId = rs.getInt(rs.getColumnIndexOrThrow("quiz_id"));
                 String frontContent = rs.getString(rs.getColumnIndexOrThrow("front_content"));
                 String backContent = rs.getString(rs.getColumnIndexOrThrow("back_content"));
 
@@ -347,7 +346,7 @@ public class LocalDB extends SQLiteOpenHelper {
     }
 
     // Saves flashcard WITH quiz_id in local db
-    public void saveFlashcard(int dictionaryId, int quizId, String frontContent, String backContent) {
+    public void saveFlashcard(int dictionaryId, String frontContent, String backContent) {
         SQLiteDatabase localDB = this.getWritableDatabase();
 
         try {

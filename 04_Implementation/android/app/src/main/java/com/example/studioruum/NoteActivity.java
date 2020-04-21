@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,8 @@ public class NoteActivity extends AppCompatActivity {
             noteContent.setText("");
             noteTitle.setHint("Note title goes here...");
             noteContent.setHint("Note content goes here...");
+            Toast toast = Toast.makeText(NoteActivity.this, "No notes in DB", Toast.LENGTH_SHORT);
+            toast.show();
         }
         else {
             ArrayAdapter<Note> noteAdapter = new ArrayAdapter<Note>(this, android.R.layout.simple_spinner_item, notes);

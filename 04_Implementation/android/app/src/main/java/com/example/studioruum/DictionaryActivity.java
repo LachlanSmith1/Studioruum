@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,13 +55,15 @@ public class DictionaryActivity extends AppCompatActivity {
             ArrayAdapter<Dictionary> noteAdapter = new ArrayAdapter<Dictionary>(this, android.R.layout.simple_spinner_item, noDicts);
             noteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             dictDrpDwn.setAdapter(noteAdapter);
+            Toast toast = Toast.makeText(DictionaryActivity.this, "No dictionaries in DB", Toast.LENGTH_SHORT);
+            toast.show();
         }
 
         // If dictionaries in DB, populate drop down
         else {
-            ArrayAdapter<Dictionary> noteAdapter = new ArrayAdapter<Dictionary>(this, android.R.layout.simple_spinner_item, dictionaries);
-            noteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            dictDrpDwn.setAdapter(noteAdapter);
+            ArrayAdapter<Dictionary> dictAdapter = new ArrayAdapter<Dictionary>(this, android.R.layout.simple_spinner_item, dictionaries);
+            dictAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            dictDrpDwn.setAdapter(dictAdapter);
 
             // Set listener for item selection from drop-down
             dictDrpDwn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -77,8 +80,9 @@ public class DictionaryActivity extends AppCompatActivity {
                         // If dictionary contains flashcards, populate table
                         if (!fromSelected.isEmpty()) {
                             // Iterates through Flashcards from selected dict
-                            for (Flashcard flashcard : fromSelected) {
+                            for (int i = 0; i < fromSelected.size(); i++) {
                                 // Get front and back of current flashcard
+                                Flashcard flashcard = fromSelected.get(i);
                                 String frontContent = flashcard.frontProperty();
                                 String backContent = flashcard.backProperty();
 
@@ -152,7 +156,6 @@ public class DictionaryActivity extends AppCompatActivity {
 
         // Set title and add text input to view
         alertDialog.setTitle("Create a new Dictionary");
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
         alertDialog.setView(input);
 
         // Listener for positive button, create dictionary
@@ -189,9 +192,8 @@ public class DictionaryActivity extends AppCompatActivity {
         AlertDialog alertDialog = new AlertDialog.Builder(DictionaryActivity.this).create();
         final EditText input = new EditText(this);
 
-        // Set title and input type, add text input to view
+        // Set title, add text input to view
         alertDialog.setTitle("Rename Dictionary");
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
         input.setText(name);
         alertDialog.setView(input);
 
