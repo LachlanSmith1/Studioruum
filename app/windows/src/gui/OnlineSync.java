@@ -21,7 +21,6 @@ package gui;
 
 //Import Statements For JDBC and Etc.
 
-import jdk.jfr.Label;
 import java.io.IOException;
 import java.sql.*;
 import java.time.*;
@@ -44,7 +43,9 @@ public class OnlineSync
 	 */
 
 	//sends an email for password recovery to a given email
-	public static void sendMail(Connection studConnect, String recipient) throws Exception{
+	public static void sendMail(Connection studConnect, String recipient) throws Exception
+	{
+
 		Properties properties = new Properties();
 		System.out.println("preparing to send mail");
 
@@ -57,7 +58,8 @@ public class OnlineSync
 		String myAccountEmail = "studioruumreset@gmail.com";
 		String password = "zitozito";
 
-		Session session = Session.getInstance(properties, new Authenticator(){
+		Session session = Session.getInstance(properties, new Authenticator()
+		{
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication(){
 				return new PasswordAuthentication(myAccountEmail ,password);
@@ -78,7 +80,9 @@ public class OnlineSync
 	}
 
 	//prepares the password recovery email
-	private static Message prepareMessage(Session session, String myAccountEmail, String recipient, String otp){
+	private static Message prepareMessage(Session session, String myAccountEmail, String recipient, String otp)
+	{
+
 		String forgot="password";
 		try{
 			Message message = new MimeMessage(session);
@@ -99,12 +103,17 @@ public class OnlineSync
 			System.out.println(ex);
 		}
 		return null;
+
 	}
 
 	//adds the details of the password recovery to the reset_password table
-	private static void addToResetTable(Connection studConnect, String email, String otp, LocalDateTime currentTime)throws SQLException{
-		PreparedStatement addToReset;
-		try {
+	private static void addToResetTable(Connection studConnect, String email, String otp, LocalDateTime currentTime)throws SQLException
+	{
+
+		PreparedStatement addToReset = null;
+
+		try
+		{
 			addToReset = studConnect.prepareStatement("INSERT INTO reset_password VALUES(?,?,?);");
 			addToReset.setString(1, email);
 			addToReset.setString(2, otp);
@@ -113,13 +122,40 @@ public class OnlineSync
 			addToReset.setTimestamp(3,expiry);
 			addToReset.executeUpdate();
 			addToReset.close();
-		} catch (SQLException ex) {
-			System.out.println(ex);
+		}
+		catch (SQLException ex)
+		{
+
+			System.out.println("Error Connecting to Online DB: " + ex);
+
+		}
+		finally
+		{
+
+			try
+			{
+
+				addToReset.close();
+
+			}
+			catch (SQLException ex)
+			{
+
+				System.out.println("Error Closing: " + ex);
+
+				addToReset = null;
+
+
+			}
+
 		}
 	}
 
-	public Boolean email_exist(Connection studConnect, String email) throws SQLException{
+	public Boolean email_exist(Connection studConnect, String email) throws SQLException
+	{
+
 		PreparedStatement statement = studConnect.prepareStatement("SELECT email FROM users WHERE email=?;");
+
 		statement.setString(1,email);
 		ResultSet rs = statement.executeQuery();
 		rs.next();
@@ -127,11 +163,14 @@ public class OnlineSync
 		rs.close();
 		statement.close();
 		if(value.equals(email)){
+			statement.close();
 			return true;
 		}
 		else{
+			statement.close();
 			return false;
 		}
+
 	}
 
 	public String find_email(Connection studConnect, String username) throws SQLException{
@@ -234,15 +273,6 @@ public class OnlineSync
 			if (studConnect != null) {
 
 				System.out.println("Connected to " + host + ".");
-
-				//TEST FUNCTIONS BELOW - UNCOMMENT AS NECCESSARY
-
-				OnlineSync syncObj = new OnlineSync();
-				String tableName = "users";
-
-				//syncObj.downloadUsers(studConnect);
-
-				//syncObj.uploadUsers(studConnect);
 
 			}
 
@@ -1231,7 +1261,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1247,6 +1277,9 @@ public class OnlineSync
 			{
 
 				System.out.println("Error Closing: " + ex);
+
+				statement = null;
+
 
 			}
 
@@ -1296,7 +1329,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1369,7 +1402,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1439,7 +1472,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1509,7 +1542,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1579,7 +1612,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1649,7 +1682,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1719,7 +1752,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1789,7 +1822,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1859,7 +1892,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1929,7 +1962,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -1999,7 +2032,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally
@@ -2069,7 +2102,7 @@ public class OnlineSync
 		catch (SQLException ex)
 		{
 
-			System.out.println("Error Connecting: " + ex);
+			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
 		finally

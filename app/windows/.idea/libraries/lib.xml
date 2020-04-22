@@ -2,14 +2,12 @@
   <library name="lib">
     <CLASSES>
       <root url="file://$PATH_TO_FX$" />
-      <root url="file://$PROJECT_DIR$/lib" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
       <root url="file://$PATH_TO_FX$" />
     </SOURCES>
     <jarDirectory url="file://$PATH_TO_FX$" recursive="false" />
-    <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
     <jarDirectory url="file://$PATH_TO_FX$" recursive="false" type="SOURCES" />
   </library>
 </component>

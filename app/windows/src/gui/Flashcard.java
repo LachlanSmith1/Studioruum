@@ -10,7 +10,7 @@ public class Flashcard extends Resource
 {
 
 	//the text kept on each side of the flashcard
-	// Changed to SimpleStringProperty in order to populate TableView
+	//changed to SimpleStringProperty in order to populate TableView
 	private SimpleStringProperty frontContent;
 	private SimpleStringProperty backContent;
 

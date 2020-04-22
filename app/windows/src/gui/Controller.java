@@ -5,13 +5,9 @@ import java.io.IOException;
 import java.util.*;
 import java.sql.*;
 import java.sql.Connection;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.TimeUnit;
 
 //All JavaFX Import Statements
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -24,14 +20,11 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-
-import javax.swing.*;
 
 public class Controller
 {
@@ -42,14 +35,17 @@ public class Controller
 
     static String accountType="";
     static String username="";
-	public String originalName = "WithCaps";
+    public String originalName = "WithCaps";
     static OnlineSync online = new OnlineSync();
 
     LocalDB locDB = new LocalDB();
 
-    Connection studConnect = null;
+    // DATABASE CONNECTIONS
 
-    //The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
+    Connection onlineConnect = null;
+    Connection offlineConnect = null;
+
+    //The Format of the Host Name is the JDBC Specifier, Then the Address to Connect, Before the Database Name
     String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
     String user = "group40";
     String password = "zitozito";
@@ -66,17 +62,17 @@ public class Controller
         Button send = (Button) scene.lookup("#send");
         String userinfo = emailusername.getText().toLowerCase();
         OnlineSync online = new OnlineSync();
-        studConnect = online.Connect();
-        if(userinfo.contains("@")&&online.email_exist(studConnect, userinfo)){
-            online.deleteOTP(studConnect, userinfo, false);
-            online.sendMail(studConnect, userinfo);
+        onlineConnect = online.Connect();
+        if(userinfo.contains("@")&&online.email_exist(onlineConnect, userinfo)){
+            online.deleteOTP(onlineConnect, userinfo, false);
+            online.sendMail(onlineConnect, userinfo);
             send.setDisable(true);
             username=userinfo;
         }
-        else if(online.username_exist(studConnect, userinfo)){
-            String email = online.find_email(studConnect, userinfo);
-            online.deleteOTP(studConnect, email, false);
-            online.sendMail(studConnect,email);
+        else if(online.username_exist(onlineConnect, userinfo)){
+            String email = online.find_email(onlineConnect, userinfo);
+            online.deleteOTP(onlineConnect, email, false);
+            online.sendMail(onlineConnect,email);
             send.setDisable(true);
             username=email;
         }
@@ -92,11 +88,11 @@ public class Controller
         String code = otp.getText();
         String email = userinfo.getText();
         OnlineSync online = new OnlineSync();
-        studConnect = online.Connect();
+        onlineConnect = online.Connect();
         if(!email.contains("@")) {
-            email = online.find_email(studConnect, email);
+            email = online.find_email(onlineConnect, email);
         }
-        PreparedStatement getOTP = studConnect.prepareStatement("SELECT otp FROM reset_password WHERE email=?");
+        PreparedStatement getOTP = onlineConnect.prepareStatement("SELECT otp FROM reset_password WHERE email=?");
         getOTP.setString(1,email);
         ResultSet rs = getOTP.executeQuery();
         rs.next();
@@ -106,7 +102,7 @@ public class Controller
             Scene nextScene = new Scene(new_password);
             window.setScene(nextScene);
         }
-        online.Disconnect(studConnect);
+        online.Disconnect(onlineConnect);
     }
 
     //changes the users password to the new password they have entered
@@ -119,15 +115,15 @@ public class Controller
         String password = psswrd.getText();
         String Repassword = Repsswrd.getText();
         if (password.equals(Repassword)&&password.length()>5) {
-            studConnect = online.Connect();
+            onlineConnect = online.Connect();
             byte[] salt = online.generateSalt();
             try {
                 password = online.generateHash(salt, password);
             } catch (NoSuchAlgorithmException ex) {
                 ex.printStackTrace();
             }
-            online.update_password(studConnect, username, password, salt);
-            online.deleteOTP(studConnect, username, true);
+            online.update_password(onlineConnect, username, password, salt);
+            online.deleteOTP(onlineConnect, username, true);
             goLogin(event);
         }
         else if(!password.equals(Repassword)){
@@ -154,7 +150,7 @@ public class Controller
         //check if username contains @
 
         if (!username.contains("@")&&password.equals(Repassword)&&password.length()>=5&&password.matches(".*\\d.*")&&password.matches(".*[A-Z].*")&&accountType!=""&&email.contains("@")&&email.contains(".")){
-            studConnect = online.Connect();
+            onlineConnect = online.Connect();
             byte[] salt = online.generateSalt();
             try {
                 password = online.generateHash(salt, password);
@@ -162,11 +158,11 @@ public class Controller
             catch(NoSuchAlgorithmException ex){
                 ex.printStackTrace();
             }
-            if(online.uploadUsers(studConnect, username, email, password, salt,accountType)){
+            if(online.uploadUsers(onlineConnect, username, email, password, salt,accountType)){
                 warning.setText("");
-				loginSync(event);
+                loginSync(event);
                 goHome(event);
-                online.downloadUsers(studConnect);
+                online.downloadUsers(onlineConnect);
             }
             else{
                 System.out.println("username is taken");
@@ -223,8 +219,8 @@ public class Controller
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
 
-        studConnect = online.Connect();
-        PreparedStatement statement = studConnect.prepareStatement("SELECT account_type FROM users WHERE username=?");
+        onlineConnect = online.Connect();
+        PreparedStatement statement = onlineConnect.prepareStatement("SELECT account_type FROM users WHERE username=?");
         Label warning = (Label) scene.lookup("#warning");
 
         // users input
@@ -238,7 +234,7 @@ public class Controller
             System.out.println(accountType);
         }
         String password = psswrd.getText();
-        byte[] salt = online.getSalt(studConnect,username);
+        byte[] salt = online.getSalt(onlineConnect,username);
         try
         {
 
@@ -252,7 +248,7 @@ public class Controller
 
         }
 
-        if(online.login(studConnect,username,password))
+        if(online.login(onlineConnect,username,password))
         {
             loginSync(event);
             goHome(event);
@@ -272,24 +268,11 @@ public class Controller
         //IT DOES GET HERE
         //System.out.println(currentUser);
 
-        //Establishes an ONLINE Connection
-        Connection onlineConnect = null;
-
-        //The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
-        String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
-
-        //Default Master Username and Password From AWS
-        String user = "group40";
-        String password = "zitozito";
-
         //Attempting to Connect
         try
         {
 
             onlineConnect = DriverManager.getConnection(host, user, password);
-
-            //Establishes an OFFLINE Connection
-            Connection offlineConnect = null;
 
             if(onlineConnect != null)
             {
@@ -366,6 +349,7 @@ public class Controller
 
                         PreparedStatement keyStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
                         keyStatement.executeUpdate();
+                        keyStatement.close();
 
                         pstmt = onlineConnect.prepareStatement("REPLACE INTO resources VALUES (?, ?, null);");
 
@@ -373,6 +357,7 @@ public class Controller
                         pstmt.setInt(1, resource_id);
                         pstmt.setString(2, username);
                         pstmt.executeUpdate();
+                        pstmt.close();
 
                         keyStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
                         keyStatement.executeUpdate();
@@ -400,6 +385,7 @@ public class Controller
                                 dpstmt.setString(3, dictionary_name);
 
                                 dpstmt.executeUpdate();
+                                dpstmt.close();
 
                                 PreparedStatement enableStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS=1;");
                                 enableStatement.executeUpdate();
@@ -413,6 +399,9 @@ public class Controller
                         {
                             do
                             {
+
+                                keyStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
+                                keyStatement.executeUpdate();
 
                                 PreparedStatement qpstmt = null;
 
@@ -431,6 +420,11 @@ public class Controller
                                 qpstmt.setString(4, quiz_topic);
 
                                 qpstmt.executeUpdate();
+                                qpstmt.close();
+
+                                keyStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
+                                keyStatement.executeUpdate();
+                                keyStatement.close();
 
                             }
                             while (quizResults.next());
@@ -440,6 +434,9 @@ public class Controller
                         {
                             do
                             {
+
+                                keyStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
+                                keyStatement.executeUpdate();
 
                                 PreparedStatement fpstmt = null;
 
@@ -469,6 +466,7 @@ public class Controller
                                     fpstmt.setString(6, back_content);
 
                                     fpstmt.executeUpdate();
+                                    fpstmt.close();
 
                                 }
                                 catch(SQLIntegrityConstraintViolationException ex)
@@ -484,8 +482,13 @@ public class Controller
                                     fpstmt.setString(5, back_content);
 
                                     fpstmt.executeUpdate();
+                                    fpstmt.close();
 
                                 }
+
+                                keyStatement = onlineConnect.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
+                                keyStatement.executeUpdate();
+                                keyStatement.close();
 
                             }
                             while (flashcardResults.next());
@@ -496,6 +499,8 @@ public class Controller
                             do
                             {
 
+                                PreparedStatement npstmt = null;
+
                                 int note_id = noteResults.getInt("note_id");
 
                                 String note_title = noteResults.getString("note_title");
@@ -504,13 +509,14 @@ public class Controller
                                 //THEN UPLOAD
 
                                 String noteSQL = "REPLACE INTO notes VALUES (?, ?, ?, ?)";
-                                pstmt = onlineConnect.prepareStatement(noteSQL);
-                                pstmt.setInt(1, note_id);
-                                pstmt.setInt(2, resource_id);
-                                pstmt.setString(3, note_title);
-                                pstmt.setString(4, note_content);
+                                npstmt = onlineConnect.prepareStatement(noteSQL);
+                                npstmt.setInt(1, note_id);
+                                npstmt.setInt(2, resource_id);
+                                npstmt.setString(3, note_title);
+                                npstmt.setString(4, note_content);
 
-                                pstmt.executeUpdate();
+                                npstmt.executeUpdate();
+                                npstmt.close();
 
                             }
                             while (noteResults.next());
@@ -554,7 +560,7 @@ public class Controller
 
                     //WARNING: CLEARS THE LOCAL DATABASE EACH TIME
 
-                    Connection offlineConnect = null;
+                    offlineConnect.close();
 
                     try
                     {
@@ -601,16 +607,6 @@ public class Controller
     {
 
         //Upload the Resources, Flashcards, Dictionaries, Quizzes
-
-        //Establishes an ONLINE Connection
-        Connection onlineConnect = null;
-
-        //The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
-        String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
-
-        //Default Master Username and Password From AWS
-        String user = "group40";
-        String password = "zitozito";
 
         //Attempting to Connect
         try
@@ -2415,7 +2411,7 @@ public class Controller
 
     public void goForuum(ActionEvent event) throws IOException, SQLException {
 
-		Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
         Parent dest = FXMLLoader.load(getClass().getResource("foruum.fxml"));
         Scene destScene = new Scene(dest);
@@ -2447,7 +2443,7 @@ public class Controller
     }
 
     public void goForuumRelatedPage(ActionEvent event) throws IOException, SQLException {
-       
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
 
@@ -2935,16 +2931,16 @@ public class Controller
                 });
             }
         });
-        
+
     }
 
     public boolean isInAClassruum() throws SQLException{
         int count = 0;
-        studConnect = online.Connect();
+        onlineConnect = online.Connect();
         PreparedStatement statement;
         ResultSet rs;
         if(accountType=="Educator"){
-            statement = studConnect.prepareStatement("SELECT COUNT(educator_username) FROM classruum WHERE educator_username = ?");
+            statement = onlineConnect.prepareStatement("SELECT COUNT(educator_username) FROM classruum WHERE educator_username = ?");
             statement.setString(1, username);
             rs = statement.executeQuery();
             if(rs.next()) {
@@ -2960,7 +2956,7 @@ public class Controller
             }
         }
         else {
-            statement = studConnect.prepareStatement("SELECT COUNT(member_name) FROM class_member WHERE member_name = ?");
+            statement = onlineConnect.prepareStatement("SELECT COUNT(member_name) FROM class_member WHERE member_name = ?");
             statement.setString(1, username);
             rs = statement.executeQuery();
             if (rs.next()) {
@@ -2988,13 +2984,13 @@ public class Controller
             return;
         } else {
             if (accountType.equals("Scholar")) {
-                studConnect = online.Connect();
+                onlineConnect = online.Connect();
                 Parent dest = FXMLLoader.load(getClass().getResource("classruum_scholar.fxml"));
                 Scene destScene = new Scene(dest);
                 //This line gets the Stage information
                 Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 window.setScene(destScene);
-                getClassruums(studConnect, username, destScene);
+                getClassruums(onlineConnect, username, destScene);
                 window.show();
 
             } else {
@@ -3007,7 +3003,7 @@ public class Controller
                 window.setScene(destScene);
 
                 Label Classtitle = (Label) destScene.lookup("#classtitle");
-                PreparedStatement statement = studConnect.prepareStatement("SELECT class_name FROM classruums WHERE educator_username=?;");
+                PreparedStatement statement = onlineConnect.prepareStatement("SELECT class_name FROM classruums WHERE educator_username=?;");
                 statement.setString(1, username);
                 ResultSet rs = statement.executeQuery();
                 if (rs.next()) {
@@ -3341,7 +3337,7 @@ public class Controller
         if (result.isPresent()){
             class_title = result.get();
             System.out.println(class_title);
-            // online.uploadClassruum(studConnect, currentUser, educator_id);
+            // online.uploadClassruum(onlineConnect, currentUser, educator_id);
         }
 
         // Get Stage and Scene info
@@ -3378,8 +3374,8 @@ public class Controller
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
         OnlineSync online = new OnlineSync();
-        Connection studConnect = online.Connect();
-        PreparedStatement statement = studConnect.prepareStatement("SELECT class_id FROM classruums WHERE educator_username=?;");
+        Connection onlineConnect = online.Connect();
+        PreparedStatement statement = onlineConnect.prepareStatement("SELECT class_id FROM classruums WHERE educator_username=?;");
         statement.setString(1,username);
         ResultSet rs = statement.executeQuery();
         rs.next();
@@ -3390,8 +3386,8 @@ public class Controller
         sent.setVisible(false);
         warning.setVisible(false);
         String invitee = username.getText();
-        if(online.username_exist(studConnect, invitee)){
-            online.inviteClassruum(studConnect, invitee, class_id);
+        if(online.username_exist(onlineConnect, invitee)){
+            online.inviteClassruum(onlineConnect, invitee, class_id);
             sent.setVisible(true);
         }
         else{
@@ -3417,7 +3413,7 @@ public class Controller
             Resource selected = (Resource) resourceDropDown.getSelectionModel().getSelectedItem();
             int resourceId = selected.getResourceID();
             try {
-                online.updateResourceOwners(studConnect, resourceId, username);
+                online.updateResourceOwners(onlineConnect, resourceId, username);
             } catch (SQLException ex) {
                 System.out.println("Error Connecting: " + ex);
             } catch (IOException e) {
@@ -3426,12 +3422,12 @@ public class Controller
         }
     }
 
-    public void getClassruums(Connection studConnect, String username, Scene scene)throws SQLException{
+    public void getClassruums(Connection onlineConnect, String username, Scene scene)throws SQLException{
         int class_id;
-        PreparedStatement statement = studConnect.prepareStatement("SELECT class_id FROM class_member WHERE member_name=?;");
+        PreparedStatement statement = onlineConnect.prepareStatement("SELECT class_id FROM class_member WHERE member_name=?;");
         statement.setString(1,username);
         ResultSet rs = statement.executeQuery();
-        PreparedStatement getClassName = studConnect.prepareStatement("SELECT class_name FROM classruums WHERE class_id=?");
+        PreparedStatement getClassName = onlineConnect.prepareStatement("SELECT class_name FROM classruums WHERE class_id=?");
         while(rs.next()){
             class_id=rs.getInt(1);
             getClassName.setInt(1,class_id);
@@ -3458,7 +3454,7 @@ public class Controller
 
     public void ClassruumScene(javafx.event.ActionEvent event)throws SQLException{
         OnlineSync online = new OnlineSync();
-        Connection studConnect = online.Connect();
+        Connection onlineConnect = online.Connect();
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
         Hyperlink classruum = (Hyperlink)event.getSource();
@@ -3466,13 +3462,13 @@ public class Controller
         TextArea description = (TextArea) scene.lookup("#description");
         class_name.setText(classruum.getText());
         class_name.setVisible(true);
-        PreparedStatement statement = studConnect.prepareStatement("SELECT educator_username FROM classruums WHERE class_name=?;");
+        PreparedStatement statement = onlineConnect.prepareStatement("SELECT educator_username FROM classruums WHERE class_name=?;");
         statement.setString(1,classruum.getText());
         ResultSet rs = statement.executeQuery();
         rs.next();
         String educator = rs.getString(1);
         rs.close();
-        PreparedStatement getResources = studConnect.prepareStatement("SELECT class_description FROM classruums WHERE class_name=?;");
+        PreparedStatement getResources = onlineConnect.prepareStatement("SELECT class_description FROM classruums WHERE class_name=?;");
         getResources.setString(1,classruum.getText());
         rs = getResources.executeQuery();
         rs.next();
@@ -3494,20 +3490,20 @@ public class Controller
         {
             Class.forName("org.sqlite.JDBC");
             offlineConnect = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
-            studConnect = online.Connect();
+            onlineConnect = online.Connect();
             Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
             Scene scene = window.getScene();
             Label added = (Label) scene.lookup("#added");
             added.setVisible(true);
             try{
-                PreparedStatement statement = studConnect.prepareStatement("SELECT resource_id FROM resource_owner WHERE owner=?;");
+                PreparedStatement statement = onlineConnect.prepareStatement("SELECT resource_id FROM resource_owner WHERE owner=?;");
                 statement.setString(1,username);
                 ResultSet rs = statement.executeQuery();
                 while(rs.next()){
                     resourceID = rs.getInt(1);
-                    noteStatement = studConnect.prepareStatement("SELECT * FROM notes WHERE resource_id = ?;");
+                    noteStatement = onlineConnect.prepareStatement("SELECT * FROM notes WHERE resource_id = ?;");
                     noteStatement.setInt(1, resourceID);
-                    dictionaryStatement = studConnect.prepareStatement("SELECT * FROM dictionaries WHERE resource_id = ?;");
+                    dictionaryStatement = onlineConnect.prepareStatement("SELECT * FROM dictionaries WHERE resource_id = ?;");
                     dictionaryStatement.setInt(1, resourceID);
                     noteResult = noteStatement.executeQuery();
                     dictionaryResult = dictionaryStatement.executeQuery();
@@ -3534,7 +3530,7 @@ public class Controller
     // to be called when the educator clicks the upload resource button
     public void uploadNote(ActionEvent event) {
         // check if they have selected a resource to upload
-        studConnect = online.Connect();
+        onlineConnect = online.Connect();
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -3555,7 +3551,7 @@ public class Controller
             int resource_ID = selected.getResourceID();
             System.out.println(resource_ID);
             try {
-                online.updateResourceOwners(studConnect, resource_ID, username);
+                online.updateResourceOwners(onlineConnect, resource_ID, username);
             } catch (SQLException ex) {
                 System.out.println("Error Connecting: " + ex);
             } catch (IOException e) {
@@ -3565,9 +3561,11 @@ public class Controller
     }
 
     // to be called when the educator clicks the upload resource button
-    public void uploadDict(ActionEvent event) {
+    public void uploadDict(ActionEvent event)
+    {
+
         // check if they have selected a resource to upload
-        studConnect = online.Connect();
+        onlineConnect = online.Connect();
         // Get Stage and Scene info
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
@@ -3584,23 +3582,29 @@ public class Controller
             alert.setHeaderText("No resources selected to be uploaded..");
             alert.setContentText("You haven't selected a resource to upload");
             alert.showAndWait();
-        } else {
+        }
+        else
+        {
+
             // add scholars as resource owner to that resource
 
             int resource_ID = selected.getResourceID();
-            try {
-                online.updateResourceOwners(studConnect, resource_ID, username);
-            } catch (SQLException ex) {
-                System.out.println("Error Connecting: " + ex);
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            try
+            {
+
+                online.updateResourceOwners(onlineConnect, resource_ID, username);
+
             }
+
+            catch (Exception ex)
+            {
+
+                System.out.println("Error Connecting to Online DB: " + ex);
+
+            }
+
         }
-    }
-    public void uploadResourcesToClassruum(ActionEvent event) throws SQLException, IOException
-    {
-
-
 
     }
 
