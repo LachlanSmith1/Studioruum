@@ -326,20 +326,20 @@ public class Controller
                     while(resourceResults.next())
                     {
 
-                        String resourceID = resourceResults.getString("resource_id");
+                        int resourceID = resourceResults.getInt("resource_id");
 
                         //Gathering All Resources With That ID
                         flashcardStatement = offlineConnect.prepareStatement("SELECT * FROM flashcards WHERE resource_id = ?;");
-                        flashcardStatement.setString(1, resourceID);
+                        flashcardStatement.setInt(1, resourceID);
 
                         noteStatement = offlineConnect.prepareStatement("SELECT * FROM notes WHERE resource_id = ?;");
-                        noteStatement.setString(1, resourceID);
+                        noteStatement.setInt(1, resourceID);
 
                         dictionaryStatement = offlineConnect.prepareStatement("SELECT * FROM dictionaries WHERE resource_id = ?;");
-                        dictionaryStatement.setString(1, resourceID);
+                        dictionaryStatement.setInt(1, resourceID);
 
                         quizStatement = offlineConnect.prepareStatement("SELECT * FROM quizzes WHERE resource_id = ?;");
-                        quizStatement.setString(1, resourceID);
+                        quizStatement.setInt(1, resourceID);
 
                         //Result Sets For All Where There is a Match
                         ResultSet flashcardResults = flashcardStatement.executeQuery();
