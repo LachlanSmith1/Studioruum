@@ -2938,6 +2938,44 @@ public class Controller
         
     }
 
+    public boolean isInAClassruum() throws SQLException{
+        int count = 0;
+        studConnect = online.Connect();
+        PreparedStatement statement;
+        ResultSet rs;
+        if(accountType=="Educator"){
+            statement = studConnect.prepareStatement("SELECT COUNT(educator_username) FROM classruum WHERE educator_username = ?");
+            statement.setString(1, username);
+            rs = statement.executeQuery();
+            if(rs.next()) {
+                count = rs.getInt(1);
+                rs.close();
+                statement.close();
+            }
+            if(count==0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        else {
+            statement = studConnect.prepareStatement("SELECT COUNT(member_name) FROM class_member WHERE member_name = ?");
+            statement.setString(1, username);
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+                rs.close();
+                statement.close();
+            }
+            if (count == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
     public void goClassruum(ActionEvent event) throws Exception {
         System.out.println(username);
         System.out.println(accountType);
