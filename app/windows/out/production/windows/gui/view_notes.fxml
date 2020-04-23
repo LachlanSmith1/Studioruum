@@ -59,14 +59,14 @@
          </font></TextField>
       <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
          <children>
-            <Button fx:id="updateNote" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#updateNote" text="Save" visible="false">
+            <Button fx:id="updateNote" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#updateNote" prefHeight="51.0" prefWidth="179.0" text="Save" visible="false">
              <VBox.margin>
-                 <Insets bottom="15.0" left="27.0" top="30.0" />
+                 <Insets bottom="15.0" left="50.0" top="15.0" />
              </VBox.margin>
             </Button>
              <Button fx:id="saveNote" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#saveNote" prefHeight="100.0" prefWidth="180.0" text="Save as New">
                  <VBox.margin>
-                     <Insets bottom="25.0" left="50.0" />
+                     <Insets bottom="15.0" left="50.0" />
                  </VBox.margin>
                <font>
                   <Font size="22.0" />
@@ -74,7 +74,7 @@
              </Button>
             <Button fx:id="noteEdit" mnemonicParsing="false" onAction="#editNote" prefHeight="100.0" prefWidth="180.0" text="Edit">
                <VBox.margin>
-                  <Insets bottom="25.0" left="50.0" />
+                  <Insets bottom="15.0" left="50.0" />
                </VBox.margin>
                <font>
                   <Font size="22.0" />
@@ -82,7 +82,7 @@
             </Button>
             <Button fx:id="noteDelete" mnemonicParsing="false" onAction="#deleteNote" prefHeight="100.0" prefWidth="180.0" text="Delete">
                <VBox.margin>
-                  <Insets bottom="25.0" left="50.0" />
+                  <Insets bottom="15.0" left="50.0" />
                </VBox.margin>
                <font>
                   <Font size="22.0" />

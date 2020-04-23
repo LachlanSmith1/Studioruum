@@ -48,8 +48,14 @@
                </font>
             </Button>
                   <ComboBox fx:id="dictDrpDwn" layoutX="1030.0" onAction="#displayDict" prefHeight="80.0" prefWidth="250.0" promptText="Select a Dictionary..." />
-                  <Button fx:id="newDict" layoutX="38.0" layoutY="160.0" mnemonicParsing="false" onAction="#saveDict" prefHeight="64.0" prefWidth="392.0" text="New Dictionary" />
-                  <Button fx:id="updateDict" layoutX="450.0" layoutY="160.0" mnemonicParsing="false" onAction="#updateDict" prefHeight="64.0" prefWidth="392.0" text="Rename Dictionary" visible="false" />
+                  <Button fx:id="newDict" layoutX="38.0" layoutY="160.0" mnemonicParsing="false" onAction="#saveDict" prefHeight="64.0" prefWidth="392.0" text="New Dictionary">
+               <font>
+                  <Font size="22.0" />
+               </font></Button>
+                  <Button fx:id="updateDict" layoutX="450.0" layoutY="160.0" mnemonicParsing="false" onAction="#updateDict" prefHeight="64.0" prefWidth="392.0" text="Rename Dictionary" visible="false">
+               <font>
+                  <Font size="22.0" />
+               </font></Button>
                   <Button fx:id="deleteDict" layoutX="860.0" layoutY="160.0" mnemonicParsing="false" onAction="#deleteDict" prefHeight="64.0" prefWidth="392.0" text="Delete Dictionary" visible="false">
                <font>
                   <Font size="22.0" />

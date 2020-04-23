@@ -119,6 +119,7 @@ public class DictionaryActivity extends AppCompatActivity {
 
                         // If no flashcards in dictionary, alert user
                         else {
+                            // Create and display alert
                             AlertDialog alertDialog = new AlertDialog.Builder(DictionaryActivity.this).create();
                             alertDialog.setTitle("No Flashcards");
                             alertDialog.setMessage("There are no flashcards in the dictionary you selected, do you want to create them?");

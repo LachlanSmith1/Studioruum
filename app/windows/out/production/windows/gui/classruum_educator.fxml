@@ -17,15 +17,15 @@
       <Button alignment="BOTTOM_LEFT" layoutX="49.0" layoutY="318.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="138.0" text="Publish Quizzes" />
       <Button layoutX="525.0" layoutY="172.0" mnemonicParsing="false" onAction="#ClassInviteButton" prefHeight="25.0" prefWidth="50.0" text="Invite" />
       <TextField fx:id="uname" layoutX="362.0" layoutY="172.0" prefHeight="25.0" prefWidth="156.0" promptText="invite a user.." />
-      <ComboBox fx:id="uplNoteDrpDwn" layoutX="49.0" layoutY="200.0" prefHeight="25.0" prefWidth="138.0" promptText="notes" />
-      <Label layoutX="49.0" layoutY="176.0" text="Upload a resource">
+      <ComboBox fx:id="uplNoteDrpDwn" layoutX="49.0" layoutY="200.0" prefHeight="25.0" prefWidth="138.0" promptText="Notes" />
+      <Label layoutX="49.0" layoutY="176.0" text="Upload a Resource">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
       <Accordion />
       <Button fx:id="uplDictButton" layoutX="199.0" layoutY="236.0" mnemonicParsing="false" onAction="#uploadDict" text="Upload" />
-      <ComboBox fx:id="uplDictDrpDwn" layoutX="49.0" layoutY="236.0" prefHeight="25.0" prefWidth="138.0" promptText="dictionaries" />
+      <ComboBox fx:id="uplDictDrpDwn" layoutX="49.0" layoutY="236.0" prefHeight="25.0" prefWidth="138.0" promptText="Dictionaries" />
       <Label fx:id="warning" layoutX="393.0" layoutY="261.0" text="Invalid username!" textFill="RED" visible="false" />
       <Label fx:id="classtitle" alignment="CENTER" layoutX="422.0" layoutY="14.0" prefHeight="115.0" prefWidth="436.0" text="Class Title" textAlignment="CENTER" wrapText="true">
          <font>

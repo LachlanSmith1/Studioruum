@@ -161,7 +161,11 @@ public class Controller
             if(online.uploadUsers(onlineConnect, username, email, password, salt,accountType)){
                 warning.setText("");
                 loginSync(event);
-                goHome(event);
+                try {
+                    goHome(event);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 online.downloadUsers(onlineConnect);
             }
             else{
@@ -229,36 +233,33 @@ public class Controller
         username = uname.getText().toLowerCase();
         statement.setString(1,username);
         ResultSet rs = statement.executeQuery();
-        if(rs.next()){
+        if(rs.next()) {
             accountType = rs.getString(1);
             System.out.println(accountType);
+            String password = psswrd.getText();
+            byte[] salt = online.getSalt(onlineConnect, username);
+            try {
+
+                password = online.generateHash(salt, password);
+
+            } catch (NoSuchAlgorithmException ex) {
+
+                ex.printStackTrace();
+
+            }
+
+            if (online.login(onlineConnect, username, password)) {
+                loginSync(event);
+                goHome(event);
+
+            } else {
+                warning.setText("Invalid username password combo");
+            }
         }
-        String password = psswrd.getText();
-        byte[] salt = online.getSalt(onlineConnect,username);
-        try
-        {
-
-            password = online.generateHash(salt, password);
-
+        else{
+            warning.setText("Invalid username");
         }
-        catch (NoSuchAlgorithmException ex)
-        {
-
-            ex.printStackTrace();
-
-        }
-
-        if(online.login(onlineConnect,username,password))
-        {
-            loginSync(event);
-            goHome(event);
-
-        }
-        else {
-            warning.setText("Invalid username password combo");
-        }
-
-
+        onlineConnect.close();
     }
 
     //Used to Download All Resources Needed For a User to Access the System
@@ -876,6 +877,22 @@ public class Controller
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(destScene);
         window.show();
+
+		// hide create button for scholar
+        Button createButton = (Button) destScene.lookup("#createBtn");
+
+        if(accountType == "scholar") {
+            createButton.setDisable(true);
+        }
+
+        // dont show create button if educator already has a classruum
+        try {
+            if(isInAClassruum()==true){
+                createButton.setDisable(true);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         //Upload All Resources When the File is Closed
         window.setOnCloseRequest((WindowEvent ev) ->
@@ -2409,6 +2426,44 @@ public class Controller
 
     }
 
+    public boolean isInAClassruum() throws SQLException{
+        int count = 0;
+        onlineConnect = online.Connect();
+        PreparedStatement statement;
+        ResultSet rs;
+        if(accountType=="Educator"){
+            statement = onlineConnect.prepareStatement("SELECT COUNT(educator_username) FROM classruum WHERE educator_username = ?");
+            statement.setString(1, username);
+            rs = statement.executeQuery();
+            if(rs.next()) {
+                count = rs.getInt(1);
+                rs.close();
+                statement.close();
+            }
+            if(count==0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        else {
+            statement = onlineConnect.prepareStatement("SELECT COUNT(member_name) FROM class_member WHERE member_name = ?");
+            statement.setString(1, username);
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+                rs.close();
+                statement.close();
+            }
+            if (count == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
     public void goForuum(ActionEvent event) throws IOException, SQLException {
 
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -2485,6 +2540,7 @@ public class Controller
                 ObservableList<String> observableComments = FXCollections.observableList(comments);
                 forum1CommentsDropDown.setItems(observableComments);
 
+
                 // setOpacity makes the dropdown list and the text area appear on the screen.
                 forum1CommentsDropDown.setOpacity(1);
                 c_context.setOpacity(1);
@@ -2507,7 +2563,7 @@ public class Controller
 
                             // uploads what the user just typed into the text box (their comment) onto the
                             // online database.
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2548,7 +2604,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2568,8 +2624,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 3;
                 titleLabel.setText("Physics");
-                introLabel.setText("This is the foruum for Physics, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
-
                 ComboBox forum3CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
                 try {
@@ -2593,7 +2647,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2609,7 +2663,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 4;
                 titleLabel.setText("Computer Science");
-                introLabel.setText("This is the foruum for Science, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
 
                 ComboBox forum4CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
@@ -2634,7 +2687,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2650,7 +2703,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 5;
                 titleLabel.setText("Maths");
-                introLabel.setText("This is the foruum for Maths, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
 
                 ComboBox forum5CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
@@ -2675,7 +2727,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2691,7 +2743,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 6;
                 titleLabel.setText("English");
-                introLabel.setText("This is the foruum for English, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
 
                 ComboBox forum6CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
@@ -2716,7 +2767,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2732,7 +2783,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 7;
                 titleLabel.setText("Religious Studies");
-                introLabel.setText("This is the foruum for Religious studies, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
 
                 ComboBox forum7CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
@@ -2757,7 +2807,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2773,7 +2823,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 8;
                 titleLabel.setText("Business");
-                introLabel.setText("This is the foruum for Business, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
 
                 ComboBox forum8CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
@@ -2798,7 +2847,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2814,7 +2863,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 9;
                 titleLabel.setText("Physical Education");
-                introLabel.setText("This is the foruum for Physical Education, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
 
                 ComboBox forum9CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
@@ -2840,7 +2888,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2856,7 +2904,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 10;
                 titleLabel.setText("History");
-                introLabel.setText("This is the foruum for History, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
 
                 ComboBox forum10CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
@@ -2881,7 +2928,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2897,7 +2944,6 @@ public class Controller
             public void handle(ActionEvent event) {
                 int forum_id = 11;
                 titleLabel.setText("Geography");
-                introLabel.setText("This is the foruum for Geography, Feel free to ask any questions you may have! If you want a different subject, use the links on the left.");
 
                 ComboBox forum11CommentsDropDown = (ComboBox) scene.lookup("#commentsComboBox");
                 List<String> comments = null;
@@ -2922,7 +2968,7 @@ public class Controller
                             String comment_context = c_context.getText();
                             c_context.setText("");
 
-                            online.uploadComment(forum_id, comment_context, originalName, time_updated);
+                            online.uploadComment(forum_id, comment_context, username, time_updated);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -2932,44 +2978,6 @@ public class Controller
             }
         });
 
-    }
-
-    public boolean isInAClassruum() throws SQLException{
-        int count = 0;
-        onlineConnect = online.Connect();
-        PreparedStatement statement;
-        ResultSet rs;
-        if(accountType=="Educator"){
-            statement = onlineConnect.prepareStatement("SELECT COUNT(educator_username) FROM classruum WHERE educator_username = ?");
-            statement.setString(1, username);
-            rs = statement.executeQuery();
-            if(rs.next()) {
-                count = rs.getInt(1);
-                rs.close();
-                statement.close();
-            }
-            if(count==0){
-                return false;
-            }
-            else{
-                return true;
-            }
-        }
-        else {
-            statement = onlineConnect.prepareStatement("SELECT COUNT(member_name) FROM class_member WHERE member_name = ?");
-            statement.setString(1, username);
-            rs = statement.executeQuery();
-            if (rs.next()) {
-                count = rs.getInt(1);
-                rs.close();
-                statement.close();
-            }
-            if (count == 0) {
-                return false;
-            } else {
-                return true;
-            }
-        }
     }
 
     public void goClassruum(ActionEvent event) throws Exception {
@@ -3200,130 +3208,6 @@ public class Controller
 
     }
 
-    public void askingAForuumQuestion(ActionEvent event) throws IOException, SQLException {
-
-
-        Parent dest = FXMLLoader.load(getClass().getResource("ask_a_question.fxml"));
-        Scene destScene = new Scene(dest);
-        //This line gets the Stage information
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        window.setScene(destScene);
-        window.show();
-
-
-        Scene scene = window.getScene();
-        TextField questionTitle = (TextField) scene.lookup("#forumTitle");
-        TextArea questionContents = (TextArea) scene.lookup("#forumContent");
-
-        String qTitle = questionTitle.getText();
-        // String qContents = questionContents.getText();
-
-        System.out.println(qTitle);
-        // System.out.println(qContents);
-
-       /* DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        LocalDateTime now = null;
-
-        // Uncomment to test
-
-
-        int comment_id = 1;
-        int forum_id = 1;
-        String comment_content = "";
-        String username = user;
-        String time_updated = dtf.format(now);
-
-        online.uploadComment(comment_id, forum_id, comment_content, username, time_updated);*/
-
-        //Upload All Resources When the File is Closed
-        window.setOnCloseRequest((WindowEvent ev) ->
-        {
-
-            try
-            {
-
-                logoutSync(event);
-
-            }
-            catch (IOException e)
-            {
-
-                e.printStackTrace();
-
-            }
-
-        });
-
-    }
-
-    public void submittingTheQuestion(ActionEvent event) throws IOException
-    {
-
-        Parent dest = FXMLLoader.load(getClass().getResource("foruum.fxml"));
-        Scene destScene = new Scene(dest);
-        //This line gets the Stage information
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        window.setScene(destScene);
-        window.show();
-
-        //Upload All Resources When the File is Closed
-        window.setOnCloseRequest((WindowEvent ev) ->
-        {
-
-            try
-            {
-
-                logoutSync(event);
-
-            }
-            catch (IOException e)
-            {
-
-                e.printStackTrace();
-
-            }
-
-        });
-
-    }
-
-
-    public void populatingFAQs(ActionEvent event) throws IOException, SQLException {
-
-        // online.downloadForuum();
-
-
-
-        // Get Stage and Scene info
-        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = window.getScene();
-
-        Hyperlink hyperlink1 = (Hyperlink) scene.lookup("#FAQ1");
-
-        //hyperlink1.setText(forum_title);
-
-        //Upload All Resources When the File is Closed
-        window.setOnCloseRequest((WindowEvent ev) ->
-        {
-
-            try
-            {
-
-                logoutSync(event);
-
-            }
-            catch (IOException e)
-            {
-
-                e.printStackTrace();
-
-            }
-
-        });
-
-    }
-
-
     public void createClassruum(ActionEvent event) throws SQLException, IOException {
 
         TextInputDialog classruumDialog = new TextInputDialog();
@@ -3485,6 +3369,7 @@ public class Controller
         String title;
         String content;
         String dictionaryName;
+        String className;
 
         try
         {
@@ -3494,6 +3379,7 @@ public class Controller
             Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
             Scene scene = window.getScene();
             Label added = (Label) scene.lookup("#added");
+            className = ((Label)scene.lookup("#className")).getText()+": ";
             added.setVisible(true);
             try{
                 PreparedStatement statement = onlineConnect.prepareStatement("SELECT resource_id FROM resource_owner WHERE owner=?;");
@@ -3508,12 +3394,12 @@ public class Controller
                     noteResult = noteStatement.executeQuery();
                     dictionaryResult = dictionaryStatement.executeQuery();
                     if(noteResult.next()) {
-                        title = noteResult.getString("note_title");
+                        title = className+noteResult.getString("note_title");
                         content = noteResult.getString("note_content");
                         locDB.saveNote(title, content);
                     }
                     else if(dictionaryResult.next()) {
-                        dictionaryName = dictionaryResult.getString("dictionary_name");
+                        dictionaryName = className+dictionaryResult.getString("dictionary_name");
                         locDB.saveDictionary(dictionaryName);
                     }
                 }
@@ -3525,6 +3411,7 @@ public class Controller
         {
             System.out.println("Error Connecting to Offline DB: " + ex.getMessage());
         }
+        
     }
 
     // to be called when the educator clicks the upload resource button

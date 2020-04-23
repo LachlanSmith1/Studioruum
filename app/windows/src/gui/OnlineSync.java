@@ -1392,9 +1392,10 @@ public class OnlineSync
 				String comment_content = rs.getString("comment_content");
 				String username = rs.getString("username");
 
+
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum1List.add(cmt);
+				String uname = new String(username);
+				commentForum1List.add(cmt + ", username: " + uname);
 
 			}
 
@@ -1462,10 +1463,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum2List.add(cmt);
+				String uname = new String(username);
+				commentForum2List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -1532,10 +1535,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum3List.add(cmt);
+				String uname = new String(username);
+				commentForum3List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -1602,10 +1607,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum4List.add(cmt);
+				String uname = new String(username);
+				commentForum4List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -1672,10 +1679,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum5List.add(cmt);
+				String uname = new String(username);
+				commentForum5List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -1742,10 +1751,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum6List.add(cmt);
+				String uname = new String(username);
+				commentForum6List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -1812,10 +1823,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum7List.add(cmt);
+				String uname = new String(username);
+				commentForum7List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -1882,10 +1895,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum8List.add(cmt);
+				String uname = new String(username);
+				commentForum8List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -1952,10 +1967,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum9List.add(cmt);
+				String uname = new String(username);
+				commentForum9List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -2022,10 +2039,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum10List.add(cmt);
+				String uname = new String(username);
+				commentForum10List.add(cmt + ", username: " + uname);
 			}
 
 		}
@@ -2092,10 +2111,12 @@ public class OnlineSync
 			while(rs.next())
 			{
 				String comment_content = rs.getString("comment_content");
+				String username = rs.getString("username");
+
 
 				String cmt = new String(comment_content);
-				// Create Dictionary object and add to list
-				commentForum11List.add(cmt);
+				String uname = new String(username);
+				commentForum11List.add(cmt + ", username: " + uname);
 			}
 
 		}

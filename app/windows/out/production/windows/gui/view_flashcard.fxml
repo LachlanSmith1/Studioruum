@@ -24,7 +24,10 @@
          <font>
             <Font size="22.0" />
          </font></Button>
-      <Button fx:id="editFlash" layoutX="15.0" layoutY="380.0" mnemonicParsing="false" onAction="#alterFlash" prefHeight="75.0" prefWidth="250.0" text="Edit Flashcard" visible="false" />
+      <Button fx:id="editFlash" layoutX="15.0" layoutY="380.0" mnemonicParsing="false" onAction="#alterFlash" prefHeight="75.0" prefWidth="250.0" text="Edit Flashcard" visible="false">
+         <font>
+            <Font size="22.0" />
+         </font></Button>
       <Button fx:id="flipFlash" disable="true" layoutX="540.0" layoutY="640.0" mnemonicParsing="false" onAction="#flipFlash" prefHeight="40.0" prefWidth="200.0" text="Flip">
          <font>
             <Font size="22.0" />
