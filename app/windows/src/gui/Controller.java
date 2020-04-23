@@ -389,7 +389,6 @@ public class Controller
     public void logoutSync(ActionEvent event) throws IOException
     {
 
-        //IT DOES GET HERE
         //System.out.println(currentUser);
 
         //Attempting to Connect
@@ -432,7 +431,6 @@ public class Controller
 
                     while(resourceResults.next())
                     {
-
                         int resourceID = resourceResults.getInt("resource_id");
 
                         //Gathering All Resources With That ID
