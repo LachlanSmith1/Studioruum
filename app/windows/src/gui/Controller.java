@@ -144,7 +144,7 @@ public class Controller
         TextField mailaccount = (TextField) scene.lookup("#email");
         TextField psswrd = (TextField) scene.lookup("#passwordtxt");
         TextField Repsswrd = (TextField) scene.lookup("#Repasswordtxt");
-        String username = uname.getText().toLowerCase();
+        username = uname.getText().toLowerCase();
         String email = mailaccount.getText().toLowerCase();
         String password = psswrd.getText();
         String Repassword = Repsswrd.getText();
@@ -2437,7 +2437,6 @@ public class Controller
                 statement.close();
             }
             if(count==0){
-                System.out.println("zzzzzzzzzzzzzzzzzzzzzz YOU AINT IN THE CLASSRUUM");
                 return false;
             }
             else{
@@ -2997,16 +2996,12 @@ public class Controller
                 window.setScene(destScene);
                 getClassruums(onlineConnect, username, destScene);
                 window.show();
-
             } else {
-
                 Parent dest = FXMLLoader.load(getClass().getResource("classruum_educator.fxml"));
                 Scene destScene = new Scene(dest);
-
                 //This line gets the Stage information
                 Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 window.setScene(destScene);
-
                 Label Classtitle = (Label) destScene.lookup("#classtitle");
                 PreparedStatement statement = onlineConnect.prepareStatement("SELECT class_name FROM classruums WHERE educator_username=?;");
                 statement.setString(1, username);
@@ -3015,7 +3010,6 @@ public class Controller
                     String value = rs.getString(1);
                     Classtitle.setText(value);
                 }
-
                 // DISPLAY DROP DOWN TO CHOOSE A RESOURCE TO UPLOAD
                 // Lookup in the Scene for ComboBox, fetch items from DB and add them
                 // Lookup in the Scene for ComboBox, fetch items from local DB and add them
@@ -3033,29 +3027,22 @@ public class Controller
                 };
                 uplDictDropDown.setCellFactory(factory);
                 uplDictDropDown.setButtonCell(factory.call(null));
-
                 // Lookup in the Scene for ComboBox, fetch items from local DB and add them
                 ComboBox uplNoteDropDown = (ComboBox) destScene.lookup("#uplNoteDrpDwn");
                 List<Note> notes = locDB.allNotes();
                 ObservableList<Note> observableNotes = FXCollections.observableList(notes);
                 uplNoteDropDown.setItems(observableNotes);
-
                 // Updates item in ComboBox to show only their title instead of their full instance
                 Callback<ListView<Note>, ListCell<Note>> factory2 = lv -> new ListCell<Note>() {
-
                     @Override
                     protected void updateItem(Note item, boolean empty) {
                         super.updateItem(item, empty);
                         setText(empty ? "" : item.getTitle());
                     }
-
                 };
-
                 uplNoteDropDown.setCellFactory(factory2);
                 uplNoteDropDown.setButtonCell(factory2.call(null));
-
                 window.show();
-
                 //Upload All Resources When the File is Closed
                 window.setOnCloseRequest((WindowEvent ev) ->
                 {
@@ -3204,8 +3191,6 @@ public class Controller
         }
 
     }
-
-
 
     public void ClassInviteButton(ActionEvent event)throws Exception{
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();

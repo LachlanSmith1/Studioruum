@@ -234,21 +234,18 @@ public class OnlineSync
 		PreparedStatement getExpiry = studConnect.prepareStatement("SELECT expiry FROM reset_password WHERE email=?;");
 		getExpiry.setString(1,email);
 		ResultSet rs = getExpiry.executeQuery();
-		Timestamp time;
-		if(rs.next()) {
-			System.out.println(LocalDateTime.now());
+		Timestamp time=null;
+		if(rs.next()){
 			time = rs.getTimestamp(1);
-			LocalDateTime expiry = time.toLocalDateTime();
-			System.out.println(expiry);
-			if (LocalDateTime.now().isAfter(expiry)) {
-				PreparedStatement statement = studConnect.prepareStatement("DELETE FROM reset_password WHERE email=?");
-				statement.setString(1, email);
-				statement.executeUpdate();
-			} else if (used) {
-				PreparedStatement statement = studConnect.prepareStatement("DELETE FROM reset_password WHERE email=?");
-				statement.setString(1, email);
-				statement.executeUpdate();
-			}
+		}
+		LocalDateTime expiry=time.toLocalDateTime();
+		if(LocalDateTime.now().isAfter(expiry)){
+			PreparedStatement statement = studConnect.prepareStatement("DELETE FROM reset_password WHERE email=?");
+			statement.setString(1, email);
+		}
+		else if(used){
+			PreparedStatement statement = studConnect.prepareStatement("DELETE FROM reset_password WHERE email=?");
+			statement.setString(1, email);
 		}
 	}
 
@@ -807,12 +804,16 @@ public class OnlineSync
 
 	public void uploadClassruum(Connection studConnect, String class_name, String class_description, String username) throws SQLException {
 		System.out.println("Attempting to Add a Value to the Table ~classruums~.");
+
 		//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
 		String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
+
 		//Default Master Username and Password From AWS
 		String user = "group40";
 		String password = "zitozito";
+
 		PreparedStatement statement = null;
+
 		Connection connection = DriverManager.getConnection(host, user, password);
 		try
 		{
@@ -822,7 +823,9 @@ public class OnlineSync
 			ResultSet rs = statement.executeQuery();
 			if(rs.next()) {
 				String educator = rs.getString(1);
+
 				//classid auto increments anyway
+
 				//Creating a Prepared Statement and Placing the Table Value In
 				statement = studConnect.prepareStatement("INSERT INTO classruums(educator_username, class_name, class_description) VALUES(?, ?, ?);");
 				statement.setString(1, educator);
@@ -833,22 +836,32 @@ public class OnlineSync
 			else{
 				System.out.println("User does not exist");
 			}
+
 		}
 		catch (SQLException ex)
 		{
+
 			System.out.println("Error Connecting: " + ex);
+
 		}
 		finally
 		{
+
 			try
 			{
+
 				statement.close();
+
 			}
 			catch (SQLException ex)
 			{
+
 				System.out.println("Error Closing: " + ex);
+
 			}
+
 		}
+
 	}
 
 	public void downloadClassruums(Connection studConnect)
