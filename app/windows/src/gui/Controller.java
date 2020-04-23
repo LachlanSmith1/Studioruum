@@ -56,7 +56,9 @@ public class Controller
     //// GLOBAL VARIABLES
 
     //sends a one time passcode to the email of the user
-    public void sendOTP(ActionEvent event) throws Exception{
+    public void sendOTP(ActionEvent event) throws Exception
+    {
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
         TextField emailusername = (TextField) scene.lookup("#userinfo");
@@ -64,24 +66,33 @@ public class Controller
         String userinfo = emailusername.getText().toLowerCase();
         OnlineSync online = new OnlineSync();
         onlineConnect = online.Connect();
-        if(userinfo.contains("@")&&online.email_exist(onlineConnect, userinfo)){
+
+        if(userinfo.contains("@")&&online.email_exist(onlineConnect, userinfo))
+        {
+
             online.deleteOTP(onlineConnect, userinfo, false);
             online.sendMail(onlineConnect, userinfo);
             send.setDisable(true);
             username=userinfo;
+
         }
-        else if(online.username_exist(onlineConnect, userinfo)){
+        else if(online.username_exist(onlineConnect, userinfo))
+        {
+
             String email = online.find_email(onlineConnect, userinfo);
             online.deleteOTP(onlineConnect, email, false);
             online.sendMail(onlineConnect,email);
             send.setDisable(true);
             username=email;
+
         }
 
     }
 
     //checks if the one time passcode is correct
-    public void confirmOTP(ActionEvent event)throws Exception{
+    public void confirmOTP(ActionEvent event)throws Exception
+    {
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
         TextField otp = (TextField) scene.lookup("#otp");
@@ -90,24 +101,37 @@ public class Controller
         String email = userinfo.getText();
         OnlineSync online = new OnlineSync();
         onlineConnect = online.Connect();
-        if(!email.contains("@")) {
+
+        if(!email.contains("@"))
+        {
+
             email = online.find_email(onlineConnect, email);
+
         }
+
         PreparedStatement getOTP = onlineConnect.prepareStatement("SELECT otp FROM reset_password WHERE email=?");
         getOTP.setString(1,email);
         ResultSet rs = getOTP.executeQuery();
         rs.next();
         String correct = rs.getString(1);
-        if(code.equals(correct)){
+
+        if(code.equals(correct))
+        {
+
             Parent new_password = FXMLLoader.load(getClass().getResource("new_password.fxml"));
             Scene nextScene = new Scene(new_password);
             window.setScene(nextScene);
+
         }
+
         online.Disconnect(onlineConnect);
+
     }
 
     //changes the users password to the new password they have entered
-    public void changePassword(ActionEvent event) throws Exception{
+    public void changePassword(ActionEvent event) throws Exception
+    {
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
         Label warning = (Label) scene.lookup("#warning");
@@ -115,28 +139,50 @@ public class Controller
         TextField Repsswrd = (TextField) scene.lookup("#Repasswordtxt");
         String password = psswrd.getText();
         String Repassword = Repsswrd.getText();
-        if (password.equals(Repassword)&&password.length()>5) {
+
+        if (password.equals(Repassword)&&password.length()>5)
+        {
+
             onlineConnect = online.Connect();
             byte[] salt = online.generateSalt();
-            try {
+
+            try
+            {
                 password = online.generateHash(salt, password);
-            } catch (NoSuchAlgorithmException ex) {
-                ex.printStackTrace();
             }
+
+            catch (NoSuchAlgorithmException ex)
+            {
+
+                ex.printStackTrace();
+
+            }
+
             online.update_password(onlineConnect, username, password, salt);
             online.deleteOTP(onlineConnect, username, true);
             goLogin(event);
+
         }
-        else if(!password.equals(Repassword)){
+
+        else if(!password.equals(Repassword))
+        {
+
             warning.setText("The 2 passwords do not match: Please re-enter.");
+
         }
-        else{
+        else
+        {
+
             warning.setText("Invalid Password: Please include at least 1 capital, 1 numeric and length 5.");
+
         }
+
     }
 
     //checks if the username and password combo used for sign up is valid
-    public void validSignUp(ActionEvent event) throws IOException{
+    public void validSignUp(ActionEvent event) throws IOException
+    {
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = window.getScene();
         Label warning = (Label) scene.lookup("#warning");
@@ -144,63 +190,117 @@ public class Controller
         TextField mailaccount = (TextField) scene.lookup("#email");
         TextField psswrd = (TextField) scene.lookup("#passwordtxt");
         TextField Repsswrd = (TextField) scene.lookup("#Repasswordtxt");
+
         username = uname.getText().toLowerCase();
         String email = mailaccount.getText().toLowerCase();
         String password = psswrd.getText();
         String Repassword = Repsswrd.getText();
         //check if username contains @
 
-        if (!username.contains("@")&&password.equals(Repassword)&&password.length()>=5&&password.matches(".*\\d.*")&&password.matches(".*[A-Z].*")&&accountType!=""&&email.contains("@")&&email.contains(".")){
+        if (!username.contains("@")&&password.equals(Repassword)&&password.length()>=5&&password.matches(".*\\d.*")&&password.matches(".*[A-Z].*")&&accountType!=""&&email.contains("@")&&email.contains("."))
+        {
+
             onlineConnect = online.Connect();
             byte[] salt = online.generateSalt();
-            try {
+
+            try
+            {
+
                 password = online.generateHash(salt, password);
+
             }
-            catch(NoSuchAlgorithmException ex){
+
+            catch(NoSuchAlgorithmException ex)
+            {
+
                 ex.printStackTrace();
+
             }
-            if(online.uploadUsers(onlineConnect, username, email, password, salt,accountType)){
+
+            if(online.uploadUsers(onlineConnect, username, email, password, salt,accountType))
+            {
+
                 warning.setText("");
                 loginSync(event);
-                try {
+
+                try
+                {
+
                     goHome(event);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+
                 }
+
+                catch (Exception ex)
+                {
+
+                    ex.printStackTrace();
+
+                }
+
                 online.downloadUsers(onlineConnect);
+
             }
-            else{
+
+            else
+            {
+
                 System.out.println("username is taken");
                 warning.setText("This username is taken: Please enter a different username.");
+
             }
 
             //create new record and add to database
+
         }
-        else if(accountType.equals("")){
+
+        else if(accountType.equals(""))
+        {
+
             warning.setText("Account type not selected: Please select an account type");
+
         }
-        else if(!password.equals(Repassword)){
+
+        else if(!password.equals(Repassword))
+        {
+
             warning.setText("The 2 passwords do not match: Please re-enter.");
+
         }
-        else if(!email.contains("@")&&!email.contains(".")){
+
+        else if(!email.contains("@")&&!email.contains("."))
+        {
+
             warning.setText("Invalid email");
+
         }
-        else if(username.contains("@")){
+
+        else if(username.contains("@"))
+        {
+
             warning.setText("Illegal character '@' in username");
+
         }
-        else{
+
+        else
+        {
+
             warning.setText("Invalid Password: Please include at least 1 capital, 1 numeric and length 5.");
+
         }
+
     }
 
     // hyperlink on the log in page that allows user to recover their password
-    public void forgotpassowrdlink(ActionEvent event) throws IOException{
+    public void forgotpassowrdlink(ActionEvent event) throws IOException
+    {
+
         Parent signUp = FXMLLoader.load(getClass().getResource("reset_password.fxml"));
         Scene signUpScene = new Scene(signUp);
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(signUpScene);
         window.show();
+
     }
 
     // hyperlink on the log in page that allows user to register
@@ -234,33 +334,55 @@ public class Controller
         username = uname.getText().toLowerCase();
         statement.setString(1,username);
         ResultSet rs = statement.executeQuery();
-        if(rs.next()) {
+
+        if(rs.next())
+        {
+
             accountType = rs.getString(1);
             System.out.println(accountType);
             String password = psswrd.getText();
             byte[] salt = online.getSalt(onlineConnect, username);
-            try {
+
+            try
+            {
 
                 password = online.generateHash(salt, password);
 
-            } catch (NoSuchAlgorithmException ex) {
+            }
+
+            catch (NoSuchAlgorithmException ex)
+            {
 
                 ex.printStackTrace();
 
             }
 
-            if (online.login(onlineConnect, username, password)) {
+            if (online.login(onlineConnect, username, password))
+            {
+
                 loginSync(event);
                 goHome(event);
 
-            } else {
-                warning.setText("Invalid username password combo");
             }
+
+            else
+            {
+
+                warning.setText("Invalid username password combo");
+
+            }
+
         }
-        else{
+
+        else
+        {
+
             warning.setText("Invalid username");
+
         }
+
         onlineConnect.close();
+
     }
 
     //Used to Download All Resources Needed For a User to Access the System
@@ -287,11 +409,11 @@ public class Controller
                     Class.forName("org.sqlite.JDBC");
                     offlineConnect = DriverManager.getConnection("jdbc:sqlite:StudioruumDB.sqlite");
                 }
+
                 catch(Exception ex)
                 {
                     System.out.println("Error Connecting to Offline DB: " + ex.getMessage());
                 }
-
 
                 try
                 {
@@ -366,6 +488,7 @@ public class Controller
 
                         if(dictionaryResults.next() != false)
                         {
+
                             do
                             {
 

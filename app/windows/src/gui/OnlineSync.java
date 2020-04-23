@@ -60,10 +60,15 @@ public class OnlineSync
 
 		Session session = Session.getInstance(properties, new Authenticator()
 		{
+
 			@Override
-			protected PasswordAuthentication getPasswordAuthentication(){
+			protected PasswordAuthentication getPasswordAuthentication()
+			{
+
 				return new PasswordAuthentication(myAccountEmail ,password);
+
 			}
+
 		});
 
 		Random rand = new Random();
@@ -77,6 +82,7 @@ public class OnlineSync
 		LocalDateTime time = LocalDateTime.now();
 		addToResetTable(studConnect,recipient,otp,time);
 		System.out.println("Message sent successfully");
+
 	}
 
 	//prepares the password recovery email
@@ -84,24 +90,42 @@ public class OnlineSync
 	{
 
 		String forgot="password";
-		try{
+		try
+		{
+
 			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(myAccountEmail));
 			InternetAddress address = new InternetAddress(recipient, false);
 			message.setRecipient(Message.RecipientType.TO, address);
-			if(forgot.equals("password")){
+
+			if(forgot.equals("password"))
+			{
+
 				message.setSubject("Studioruum Password Reset");
 				message.setText("Your OTP for reset is "+otp);
 				//add to database(Connection studConnect, email, random_num, current_time)
+
 			}
-			else if(forgot.equals("username")){
+
+			else if(forgot.equals("username"))
+			{
+
 				message.setSubject("Studioruum Account Linked to this email");
 				message.setText("The username for the account linked to this email is");
+
 			}
+
 			return message;
-		}catch(Exception ex){
-			System.out.println(ex);
+
 		}
+
+		catch(Exception ex)
+		{
+
+			System.out.println(ex);
+
+		}
+
 		return null;
 
 	}
@@ -114,6 +138,7 @@ public class OnlineSync
 
 		try
 		{
+
 			addToReset = studConnect.prepareStatement("INSERT INTO reset_password VALUES(?,?,?);");
 			addToReset.setString(1, email);
 			addToReset.setString(2, otp);
@@ -122,7 +147,9 @@ public class OnlineSync
 			addToReset.setTimestamp(3,expiry);
 			addToReset.executeUpdate();
 			addToReset.close();
+
 		}
+
 		catch (SQLException ex)
 		{
 
@@ -138,6 +165,7 @@ public class OnlineSync
 				addToReset.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -149,6 +177,7 @@ public class OnlineSync
 			}
 
 		}
+
 	}
 
 	public Boolean email_exist(Connection studConnect, String email) throws SQLException
@@ -162,97 +191,166 @@ public class OnlineSync
 		String value=rs.getString(1);
 		rs.close();
 		statement.close();
-		if(value.equals(email)){
+
+		if(value.equals(email))
+		{
+
 			statement.close();
 			return true;
+
 		}
-		else{
+
+		else
+		{
+
 			statement.close();
 			return false;
+
 		}
 
 	}
 
-	public String find_email(Connection studConnect, String username) throws SQLException{
+	public String find_email(Connection studConnect, String username) throws SQLException
+	{
+
 		PreparedStatement statement = studConnect.prepareStatement("SELECT email FROM users WHERE username=?;");
 		statement.setString(1,username);
 		ResultSet rs = statement.executeQuery();
 		rs.next();
+
 		String value=rs.getString(1);
 		rs.close();
 		statement.close();
 		return value;
+
 	}
 
-	public Boolean username_exist(Connection studConnect, String username) throws SQLException{
+	public Boolean username_exist(Connection studConnect, String username) throws SQLException
+	{
+
 		PreparedStatement statement;
 		ResultSet rs;
 		String value=null;
-		if(username.contains("@")) {
+
+		if(username.contains("@"))
+		{
+
 			statement = studConnect.prepareStatement("SELECT email FROM users WHERE email=?;");
 			statement.setString(1, username);
 			rs = statement.executeQuery();
-			if(rs.next()) {
+
+			if(rs.next())
+			{
+
 				value = rs.getString(1);
+
 			}
+
 			rs.close();
 			statement.close();
-			if (username.equals(value)) {
+
+			if (username.equals(value))
+			{
+
 				return true;
-			} else {
-				return false;
+
 			}
+
+			else
+			{
+
+				return false;
+
+			}
+
 		}
-		else{
+
+		else
+		{
+
 			statement = studConnect.prepareStatement("SELECT username FROM users WHERE username=?;");
 			statement.setString(1, username);
 			rs = statement.executeQuery();
-			if(rs.next()) {
+
+			if(rs.next())
+			{
+
 				value = rs.getString(1);
+
 			}
+
 			rs.close();
 			statement.close();
-			if (username.equals(value)) {
+
+			if (username.equals(value))
+			{
+
 				return true;
-			} else {
-				return false;
+
 			}
+
+			else
+			{
+
+				return false;
+
+			}
+
 		}
+
 	}
 
-	public void update_password(Connection studConnect, String email, String password, byte[] salt)throws SQLException{
+	public void update_password(Connection studConnect, String email, String password, byte[] salt)throws SQLException
+	{
+
 		PreparedStatement statement = studConnect.prepareStatement("UPDATE users SET password=?, salt=? WHERE email=?");
 		statement.setString(1, password);
 		statement.setBytes(2, salt);
 		statement.setString(3, email);
 		statement.executeUpdate();
 		statement.close();
+
 	}
 
 	//deletes the one time passcode record from the database
-	public void deleteOTP(Connection studConnect, String email, Boolean used)throws SQLException{
+	public void deleteOTP(Connection studConnect, String email, Boolean used)throws SQLException
+	{
+
 		PreparedStatement getExpiry = studConnect.prepareStatement("SELECT expiry FROM reset_password WHERE email=?;");
 		getExpiry.setString(1,email);
 		ResultSet rs = getExpiry.executeQuery();
 		Timestamp time=null;
-		if(rs.next()){
+
+		if(rs.next())
+		{
+
 			time = rs.getTimestamp(1);
+
 		}
+
 		LocalDateTime expiry=time.toLocalDateTime();
-		if(LocalDateTime.now().isAfter(expiry)){
+		if(LocalDateTime.now().isAfter(expiry))
+		{
+
 			PreparedStatement statement = studConnect.prepareStatement("DELETE FROM reset_password WHERE email=?");
 			statement.setString(1, email);
+
 		}
-		else if(used){
+		else if(used)
+		{
+
 			PreparedStatement statement = studConnect.prepareStatement("DELETE FROM reset_password WHERE email=?");
 			statement.setString(1, email);
+
 		}
+
 	}
 
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
 	//Acts as the Main Method of the Program
-	public Connection Connect() {
+	public Connection Connect()
+	{
 
 		//Establishes a Connection
 		Connection studConnect = null;
@@ -270,13 +368,15 @@ public class OnlineSync
 
 			studConnect = DriverManager.getConnection(host, user, password);
 
-			if (studConnect != null) {
+			if (studConnect != null)
+			{
 
 				System.out.println("Connected to " + host + ".");
 
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
@@ -302,6 +402,7 @@ public class OnlineSync
 				studConnect.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -392,6 +493,7 @@ public class OnlineSync
 		byte[] hash = digest.digest(password.getBytes());
 		String hashedPassword=bytesToStringHex(hash);
 		return hashedPassword;
+
 	}
 
 	//////////////////////////
@@ -408,6 +510,7 @@ public class OnlineSync
 
 	public Boolean uploadUsers(Connection studConnect, String uname, String account, String pword, byte[] salt, String account_type)
 	{
+
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 		LocalDateTime now;
 		System.out.println("Attempting to Add a Value to the Table ~users~.");
@@ -417,6 +520,7 @@ public class OnlineSync
 
 		try
 		{
+
 			now=LocalDateTime.now();
 			String username = uname;
 			String email = account;
@@ -430,12 +534,18 @@ public class OnlineSync
 			int unique = rs.getInt(1);
 			rs.close();
 			stmt.close();
-			if(unique>0){
+
+			if(unique>0)
+			{
+
 				System.out.println("Username already exists");
 				return false;
+
 			}
 
-			else {
+			else
+			{
+
 				//Creating a Prepared Statement and Placing the Table Value In
 				statement = studConnect.prepareStatement("INSERT INTO users VALUES(?, ?, ?, ?, ?,?,?);");
 				statement.setString(1, username);
@@ -449,8 +559,11 @@ public class OnlineSync
 				statement.executeUpdate();
 				statement.close();
 				return true;
+
 			}
+
 		}
+
 		catch (SQLException ex)
 		{
 
@@ -458,6 +571,7 @@ public class OnlineSync
 			return false;
 
 		}
+
 	}
 
 	public void downloadUsers(Connection studConnect)
@@ -493,12 +607,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -508,6 +624,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -553,12 +670,14 @@ public class OnlineSync
 			statement.executeUpdate();
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -568,6 +687,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -608,12 +728,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -623,6 +745,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -658,6 +781,7 @@ public class OnlineSync
 				return true;
 
 			}
+
 			else
 			{
 
@@ -666,6 +790,7 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
@@ -673,6 +798,7 @@ public class OnlineSync
 			return false;
 
 		}
+
 	}
 
 	//////////////////////////
@@ -709,12 +835,14 @@ public class OnlineSync
 			statement.executeUpdate();
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -724,6 +852,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -764,12 +893,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -779,6 +910,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -802,7 +934,9 @@ public class OnlineSync
 	*/
 	//////////////////////////
 
-	public void uploadClassruum(Connection studConnect, String class_name, String class_description, String username) throws SQLException {
+	public void uploadClassruum(Connection studConnect, String class_name, String class_description, String username) throws SQLException
+	{
+
 		System.out.println("Attempting to Add a Value to the Table ~classruums~.");
 
 		//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
@@ -815,13 +949,18 @@ public class OnlineSync
 		PreparedStatement statement = null;
 
 		Connection connection = DriverManager.getConnection(host, user, password);
+
 		try
 		{
+
 			// get the educators id
 			statement = studConnect.prepareStatement("SELECT username FROM users WHERE username = ?");
 			statement.setString(1, username);
 			ResultSet rs = statement.executeQuery();
-			if(rs.next()) {
+
+			if(rs.next())
+			{
+
 				String educator = rs.getString(1);
 
 				//classid auto increments anyway
@@ -832,18 +971,25 @@ public class OnlineSync
 				statement.setString(2, class_name);
 				statement.setString(3, class_description);
 				statement.executeUpdate();
+
 			}
-			else{
+
+			else
+			{
+
 				System.out.println("User does not exist");
+
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -853,6 +999,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -866,6 +1013,7 @@ public class OnlineSync
 
 	public void downloadClassruums(Connection studConnect)
 	{
+
 		System.out.println("Attempting to Show All Values in the Table ~classruums~.");
 
 		//Declaring the Statement to Be Used
@@ -893,12 +1041,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -908,6 +1058,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -919,20 +1070,17 @@ public class OnlineSync
 			}
 
 		}
+
 	}
 
-	public void inviteClassruum(Connection studConnect, String username, int class_id)throws SQLException{
+	public void inviteClassruum(Connection studConnect, String username, int class_id)throws SQLException
+	{
+
 		PreparedStatement statement = studConnect.prepareStatement("INSERT INTO class_member VALUES(?,?);");
 		statement.setString(1,username);
 		statement.setInt(2,class_id);
 		statement.executeUpdate();
 
-		/*PreparedStatement getClassMembers = studConnect.prepareStatement("SELECT member_name FROM class_members WHERE class_id=?");
-		getClassMembers.setInt(1,class_id);
-		ResultSet rs = getClassMembers.executeQuery();
-		while(rs.next()){
-			rs.getString(1);
-		}*/
 	}
 
 	public void uploadClassruumScholars(Connection studConnect)
@@ -956,12 +1104,14 @@ public class OnlineSync
 			statement.executeUpdate();
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -971,6 +1121,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -979,9 +1130,12 @@ public class OnlineSync
 			}
 
 		}
+
 	}
 
-	public void updateResourceOwners(Connection studConnect, int resource_ID, String username) throws SQLException, IOException {
+	public void updateResourceOwners(Connection studConnect, int resource_ID, String username) throws SQLException, IOException
+	{
+
 		//Declaring the Statement to Be Used
 		PreparedStatement statement;
 		PreparedStatement statement2;
@@ -991,13 +1145,19 @@ public class OnlineSync
 
 		try
 		{
+
 			System.out.println("TEST");
 			statement = studConnect.prepareStatement("SELECT class_id FROM classruums WHERE educator_username = ?;");
 			statement.setString(1, username);
 			ResultSet rs = statement.executeQuery();
-			if(rs.next()) {
+
+			if(rs.next())
+			{
+
 				class_id = rs.getInt("class_ID");
+
 			}
+
 			rs.close();
 			statement.close();
 			// retrieve the educators class id ID
@@ -1008,24 +1168,31 @@ public class OnlineSync
 			ResultSet rs2 = statement2.executeQuery();
 
 			// add each scholar in the classruum as a resource owner
-			while(rs2.next()) {
+			while(rs2.next())
+			{
+
 				scholar_Username = rs2.getString(1);
 				statement3 = studConnect.prepareStatement("INSERT INTO resource_owner VALUES(?, ?);");
 				statement3.setInt(1, resource_ID);
 				statement3.setString(2, scholar_Username);
 				statement3.executeUpdate();
+
 			}
+
 		}
+
 		catch (SQLException ex)
 		{
+
 			System.out.println("Error Connecting: " + ex);
-		} //catch (Exception e) {
-			//System.out.println("updateResourceOwners Error: " + e.getMessage());
-		//}
+
+		}
+
 	}
 
 	public void downloadClassruumScholars(Connection studConnect)
 	{
+
 		System.out.println("Attempting to Show All Values in the Table ~classruums_scholars~.");
 
 		//Declaring the Statement to Be Used
@@ -1052,12 +1219,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1067,6 +1236,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1078,11 +1248,15 @@ public class OnlineSync
 			}
 
 		}
+
 	}
 
-	public void downloadClassResources(Connection studConnect, String currentUser, int educators_id) throws SQLException, IOException {
+	public void downloadClassResources(Connection studConnect, String currentUser, int educators_id) throws SQLException, IOException
+	{
+
 		try
 		{
+
 			PreparedStatement statement = studConnect.prepareStatement("SELECT resource_id FROM resource_owner WHERE resource_owner = ?");
 			statement.setInt(1, educators_id);
 
@@ -1090,16 +1264,23 @@ public class OnlineSync
 			ResultSet rs = statement.executeQuery();
 
 			//
-			while(rs.next()) {
+			while(rs.next())
+			{
+
 				int resource_id = rs.getInt("resource_id");
 				PreparedStatement statement2 = studConnect.prepareStatement("INSERT INTO resource_owner VALUES(?, ?);");
 				statement2.setInt(1, resource_id);
 				//statement2.setInt(2, username);
+
 			}
+
 		}
+
 		catch (SQLException ex)
 		{
+
 			System.out.println("Error Connecting: " + ex);
+
 		}
 
 
@@ -1117,7 +1298,9 @@ public class OnlineSync
 	*/
 	//////////////////////////
 
-	public void uploadForuums(Integer forum_id, Integer class_id, String forum_title) throws SQLException {
+	public void uploadForuums(Integer forum_id, Integer class_id, String forum_title) throws SQLException
+	{
+
 		System.out.println("Attempting to Add a Value to the Table ~foruums~.");
 
 		//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
@@ -1126,7 +1309,6 @@ public class OnlineSync
 		//Default Master Username and Password From AWS
 		String user = "group40";
 		String password = "zitozito";
-
 
 		//Declaring the Statement to Be Used
 		PreparedStatement statement = null;
@@ -1145,12 +1327,14 @@ public class OnlineSync
 			statement.executeUpdate();
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1160,6 +1344,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1168,34 +1353,39 @@ public class OnlineSync
 			}
 
 		}
+
 	}
 
 	public void downloadForuum() throws SQLException 
 	{
-	System.out.println("Attempting to Show All Values in the Table ~foruums~.");
 
-	//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
-	String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
+		System.out.println("Attempting to Show All Values in the Table ~foruums~.");
 
-	//Default Master Username and Password From AWS
-	String user = "group40";
-	String password = "zitozito";
+		//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
+		String host = "jdbc:mysql://studioruum.c5iijqup9ms0.us-east-1.rds.amazonaws.com/studioruumOnline";
 
-
-	//Declaring the Statement to Be Used
-	PreparedStatement statement = null;
-
-	Connection connection = DriverManager.getConnection(host, user, password);
+		//Default Master Username and Password From AWS
+		String user = "group40";
+		String password = "zitozito";
 
 
-		try {
+		//Declaring the Statement to Be Used
+		PreparedStatement statement = null;
+
+		Connection connection = DriverManager.getConnection(host, user, password);
+
+
+		try
+		{
 
 			//Creating a Prepared Statement
 			statement = connection.prepareStatement("SELECT * FROM foruums;");
 			//Gather the Results of the Select
 			ResultSet rs = statement.executeQuery();
+
 			//Print Out Each Result
-			while (rs.next()) {
+			while (rs.next())
+			{
 
 				int forum_id = rs.getInt("forum_id");
 				int class_id = rs.getInt("class_id");
@@ -1206,26 +1396,36 @@ public class OnlineSync
 			}
 
 
-		} catch (SQLException ex) {
+		}
+
+		catch (SQLException ex)
+		{
 
 			System.out.println("Error Connecting: " + ex);
 
-		} finally {
+		}
 
-			try {
+		finally
+		{
+
+			try
+			{
 
 				statement.close();
 
-			} catch (SQLException ex) {
+			}
+
+			catch (SQLException ex)
+			{
 
 				System.out.println("Error Closing: " + ex);
 
 				statement = null;
 
-
 			}
 
 		}
+
 	}
 
 	//////////////////////////
@@ -1240,7 +1440,9 @@ public class OnlineSync
 	*/
 	//////////////////////////
 
-	public void uploadComment(Integer forum_id, String comment_content, String username, String time_updated) throws SQLException {
+	public void uploadComment(Integer forum_id, String comment_content, String username, String time_updated) throws SQLException
+	{
+
 		System.out.println("Attempting to Add a Value to the Table ~comments~.");
 
 		//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
@@ -1286,6 +1488,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1297,9 +1500,12 @@ public class OnlineSync
 			}
 
 		}
+
 	}
 
-	public void downloadComment() throws SQLException {
+	public void downloadComment() throws SQLException
+	{
+
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
 
 		//The Format of the Host Name is the JDCB Specifier, Then the Address to Connect, Before the Database Name
@@ -1339,12 +1545,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1354,6 +1562,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1365,14 +1574,14 @@ public class OnlineSync
 			}
 
 		}
+
 	}
 
 	// These functions are me downloading each forum_ids questions. I couldn't think of another way.
 
-
-
 	public List downloadCommentsForum1() throws SQLException
 	{
+
 		List<String> commentForum1List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1402,9 +1611,9 @@ public class OnlineSync
 			//Print Out Each Result
 			while(rs.next())
 			{
+
 				String comment_content = rs.getString("comment_content");
 				String username = rs.getString("username");
-
 
 				String cmt = new String(comment_content);
 				String uname = new String(username);
@@ -1413,12 +1622,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1428,6 +1639,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1440,12 +1652,13 @@ public class OnlineSync
 
 		}
 
-
 		return commentForum1List;
+
 	}
 
 	public List downloadCommentsForum2() throws SQLException
 	{
+
 		List<String> commentForum2List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1485,12 +1698,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1500,6 +1715,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1518,6 +1734,7 @@ public class OnlineSync
 
 	public List downloadCommentsForum3() throws SQLException
 	{
+
 		List<String> commentForum3List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1557,12 +1774,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1572,6 +1791,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1584,12 +1804,13 @@ public class OnlineSync
 
 		}
 
-
 		return commentForum3List;
+
 	}
 
 	public List downloadCommentsForum4() throws SQLException
 	{
+
 		List<String> commentForum4List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1619,6 +1840,7 @@ public class OnlineSync
 			//Print Out Each Result
 			while(rs.next())
 			{
+
 				String comment_content = rs.getString("comment_content");
 				String username = rs.getString("username");
 
@@ -1626,6 +1848,7 @@ public class OnlineSync
 				String cmt = new String(comment_content);
 				String uname = new String(username);
 				commentForum4List.add(cmt + ", username: " + uname);
+
 			}
 
 		}
@@ -1635,6 +1858,7 @@ public class OnlineSync
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1644,6 +1868,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1656,12 +1881,12 @@ public class OnlineSync
 
 		}
 
-
 		return commentForum4List;
 	}
 
 	public List downloadCommentsForum5() throws SQLException
 	{
+
 		List<String> commentForum5List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1698,15 +1923,18 @@ public class OnlineSync
 				String cmt = new String(comment_content);
 				String uname = new String(username);
 				commentForum5List.add(cmt + ", username: " + uname);
+
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1716,6 +1944,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1723,17 +1952,16 @@ public class OnlineSync
 
 				statement = null;
 
-
 			}
 
 		}
-
 
 		return commentForum5List;
 	}
 
 	public List downloadCommentsForum6() throws SQLException
 	{
+
 		List<String> commentForum6List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1763,6 +1991,7 @@ public class OnlineSync
 			//Print Out Each Result
 			while(rs.next())
 			{
+
 				String comment_content = rs.getString("comment_content");
 				String username = rs.getString("username");
 
@@ -1770,15 +1999,18 @@ public class OnlineSync
 				String cmt = new String(comment_content);
 				String uname = new String(username);
 				commentForum6List.add(cmt + ", username: " + uname);
+
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1788,6 +2020,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1800,12 +2033,12 @@ public class OnlineSync
 
 		}
 
-
 		return commentForum6List;
 	}
 
 	public List downloadCommentsForum7() throws SQLException
 	{
+
 		List<String> commentForum7List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1835,6 +2068,7 @@ public class OnlineSync
 			//Print Out Each Result
 			while(rs.next())
 			{
+
 				String comment_content = rs.getString("comment_content");
 				String username = rs.getString("username");
 
@@ -1842,15 +2076,18 @@ public class OnlineSync
 				String cmt = new String(comment_content);
 				String uname = new String(username);
 				commentForum7List.add(cmt + ", username: " + uname);
+
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1860,6 +2097,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1872,12 +2110,12 @@ public class OnlineSync
 
 		}
 
-
 		return commentForum7List;
 	}
 
 	public List downloadCommentsForum8() throws SQLException
 	{
+
 		List<String> commentForum8List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1907,6 +2145,7 @@ public class OnlineSync
 			//Print Out Each Result
 			while(rs.next())
 			{
+
 				String comment_content = rs.getString("comment_content");
 				String username = rs.getString("username");
 
@@ -1914,15 +2153,18 @@ public class OnlineSync
 				String cmt = new String(comment_content);
 				String uname = new String(username);
 				commentForum8List.add(cmt + ", username: " + uname);
+
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -1932,6 +2174,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -1939,17 +2182,16 @@ public class OnlineSync
 
 				statement = null;
 
-
 			}
 
 		}
-
 
 		return commentForum8List;
 	}
 
 	public List downloadCommentsForum9() throws SQLException
 	{
+
 		List<String> commentForum9List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -1979,6 +2221,7 @@ public class OnlineSync
 			//Print Out Each Result
 			while(rs.next())
 			{
+
 				String comment_content = rs.getString("comment_content");
 				String username = rs.getString("username");
 
@@ -1986,15 +2229,18 @@ public class OnlineSync
 				String cmt = new String(comment_content);
 				String uname = new String(username);
 				commentForum9List.add(cmt + ", username: " + uname);
+
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -2004,6 +2250,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -2016,12 +2263,13 @@ public class OnlineSync
 
 		}
 
-
 		return commentForum9List;
+
 	}
 
 	public List downloadCommentsForum10() throws SQLException
 	{
+
 		List<String> commentForum10List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -2051,6 +2299,7 @@ public class OnlineSync
 			//Print Out Each Result
 			while(rs.next())
 			{
+
 				String comment_content = rs.getString("comment_content");
 				String username = rs.getString("username");
 
@@ -2058,15 +2307,18 @@ public class OnlineSync
 				String cmt = new String(comment_content);
 				String uname = new String(username);
 				commentForum10List.add(cmt + ", username: " + uname);
+
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -2076,6 +2328,7 @@ public class OnlineSync
 				statement.close();
 
 			}
+
 			catch (SQLException ex)
 			{
 
@@ -2083,17 +2336,17 @@ public class OnlineSync
 
 				statement = null;
 
-
 			}
 
 		}
 
-
 		return commentForum10List;
+
 	}
 
 	public List downloadCommentsForum11() throws SQLException
 	{
+
 		List<String> commentForum11List = new ArrayList<>();
 
 		System.out.println("Attempting to Show All Values in the Table ~comments~.");
@@ -2104,7 +2357,6 @@ public class OnlineSync
 		//Default Master Username and Password From AWS
 		String user = "group40";
 		String password = "zitozito";
-
 
 		//Declaring the Statement to Be Used
 		PreparedStatement statement = null;
@@ -2133,12 +2385,14 @@ public class OnlineSync
 			}
 
 		}
+
 		catch (SQLException ex)
 		{
 
 			System.out.println("Error Connecting to Online DB: " + ex);
 
 		}
+
 		finally
 		{
 
@@ -2160,8 +2414,8 @@ public class OnlineSync
 
 		}
 
-
 		return commentForum11List;
+
 	}
 
 }
