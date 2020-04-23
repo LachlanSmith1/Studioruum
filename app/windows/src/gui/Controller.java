@@ -22,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
@@ -175,7 +176,7 @@ public class Controller
 
             //create new record and add to database
         }
-        else if(accountType==""){
+        else if(accountType.equals("")){
             warning.setText("Account type not selected: Please select an account type");
         }
         else if(!password.equals(Repassword)){
@@ -869,50 +870,45 @@ public class Controller
     // navigation buttons
     public void goHome(ActionEvent event) throws IOException
     {
-
         Parent dest = FXMLLoader.load(getClass().getResource("home.fxml"));
         Scene destScene = new Scene(dest);
-
         //This line gets the Stage information
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        window.setScene(destScene);
-        window.show();
-
-		// hide create button for scholar
+        // hide create button for scholar
         Button createButton = (Button) destScene.lookup("#createBtn");
-
-        if(accountType == "scholar") {
+        Rectangle rectangle = (Rectangle) destScene.lookup("#createRectangle");
+        Label createLabel = (Label) destScene.lookup("#createLbl");
+        if(accountType.equals("Scholar")){
             createButton.setDisable(true);
+            createButton.setVisible(false);
+            rectangle.setVisible(false);
+            createLabel.setVisible(false);
         }
-
         // dont show create button if educator already has a classruum
         try {
             if(isInAClassruum()==true){
                 createButton.setDisable(true);
+                createButton.setVisible(false);
+                rectangle.setVisible(false);
+                createLabel.setVisible(false);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        window.setScene(destScene);
+        window.show();
         //Upload All Resources When the File is Closed
         window.setOnCloseRequest((WindowEvent ev) ->
         {
-
             try
             {
-
                 logoutSync(event);
-
             }
             catch (IOException e)
             {
-
                 e.printStackTrace();
-
             }
-
         });
-
     }
 
     public void goLogin(ActionEvent event) throws IOException{
@@ -2431,8 +2427,8 @@ public class Controller
         onlineConnect = online.Connect();
         PreparedStatement statement;
         ResultSet rs;
-        if(accountType=="Educator"){
-            statement = onlineConnect.prepareStatement("SELECT COUNT(educator_username) FROM classruum WHERE educator_username = ?");
+        if(accountType.equals("Educator")){
+            statement = onlineConnect.prepareStatement("SELECT COUNT(educator_username) FROM classruums WHERE educator_username = ?");
             statement.setString(1, username);
             rs = statement.executeQuery();
             if(rs.next()) {
@@ -2441,6 +2437,7 @@ public class Controller
                 statement.close();
             }
             if(count==0){
+                System.out.println("zzzzzzzzzzzzzzzzzzzzzz YOU AINT IN THE CLASSRUUM");
                 return false;
             }
             else{
@@ -3208,51 +3205,7 @@ public class Controller
 
     }
 
-    public void createClassruum(ActionEvent event) throws SQLException, IOException {
 
-        TextInputDialog classruumDialog = new TextInputDialog();
-
-        classruumDialog.setTitle("Enter the Classruum Title");
-        classruumDialog.setHeaderText("What is the Classruum Title?");
-        classruumDialog.setContentText("Please enter the classruum name:");
-
-        String class_title;
-        Optional<String> result = classruumDialog.showAndWait();
-        if (result.isPresent()){
-            class_title = result.get();
-            System.out.println(class_title);
-            // online.uploadClassruum(onlineConnect, currentUser, educator_id);
-        }
-
-        // Get Stage and Scene info
-        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = window.getScene();
-
-        Hyperlink hyperlink1 = (Hyperlink) scene.lookup("#Classruum1");
-        //hyperlink1.setText(class_title);
-
-        window.show();
-
-        //Upload All Resources When the File is Closed
-        window.setOnCloseRequest((WindowEvent ev) ->
-        {
-
-            try
-            {
-
-                logoutSync(event);
-
-            }
-            catch (IOException e)
-            {
-
-                e.printStackTrace();
-
-            }
-
-        });
-
-    }
 
     public void ClassInviteButton(ActionEvent event)throws Exception{
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -3277,6 +3230,57 @@ public class Controller
         else{
             warning.setVisible(true);
         }
+    }
+
+    public void createClassruum(ActionEvent event) throws SQLException, IOException {
+        onlineConnect = online.Connect();
+        TextInputDialog titleDialog = new TextInputDialog();
+        titleDialog.setTitle("Enter the Classruum title");
+        titleDialog.setHeaderText("What is the Classruum title?");
+        titleDialog.setContentText("Please enter the classruum name:");
+        TextInputDialog descDialog = new TextInputDialog();
+        descDialog.setTitle("Enter the Classruum description");
+        descDialog.setHeaderText("What is the Classruum description?");
+        descDialog.setContentText("Please enter the classruum description:");
+        String class_title;
+        String class_desc;
+        Optional<String> titleResult = titleDialog.showAndWait();
+        if (titleResult.isPresent()){
+            class_title = titleResult.get();
+            Optional<String> descResult = descDialog.showAndWait();
+            if (descResult.isPresent()) {
+                class_desc = descResult.get();
+                online.uploadClassruum(onlineConnect, class_title, class_desc, username);
+                //changes start
+                Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+                Scene scene = window.getScene();
+                Button createButton = (Button) scene.lookup("#createBtn");
+                Label createLabel = (Label) scene.lookup("#createLbl");
+                createButton.setDisable(true);
+                createButton.setVisible(false);
+                createLabel.setText("Created!");
+                //changes end
+            }
+        }
+
+        // Get Stage and Scene info
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = window.getScene();
+
+        window.show();
+
+        //Upload All Resources When the File is Closed
+        window.setOnCloseRequest((WindowEvent ev) ->
+        {
+            try
+            {
+                logoutSync(event);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        });
     }
 
     // to be called when the educator clicks the upload resource button

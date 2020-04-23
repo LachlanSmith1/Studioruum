@@ -30,7 +30,7 @@
             <children>
                 <AnchorPane maxHeight="-1.0" maxWidth="-1.0" VBox.vgrow="ALWAYS">
                     <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffd1d1" height="48.0" layoutX="994.0" layoutY="647.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" width="250.0" />
+                        <Rectangle fx:id="createRectangle" arcHeight="5.0" arcWidth="5.0" fill="#ffd1d1" height="48.0" layoutX="994.0" layoutY="647.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" width="250.0" />
                         <Label alignment="CENTER" layoutX="317.0" layoutY="20.0" prefHeight="64.0" prefWidth="647.0" text="studioruum">
                             <font>
                                 <Font name="Segoe UI Semibold" size="96.0" />
@@ -66,7 +66,7 @@
                      <font>
                         <Font size="22.0" />
                      </font></Label>
-                        <Label layoutX="1089.0" layoutY="658.0" text="CREATE">
+                        <Label fx:id="createLbl" layoutX="1089.0" layoutY="658.0" text="CREATE">
                      <font>
                         <Font size="18.0" />
                      </font></Label>
