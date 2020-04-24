@@ -84,8 +84,8 @@
     <property name="OverrideImplement.combined" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="dynamic.classpath" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/javafx.web.jar!/" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="last_opened_file_path" value="$PATH_TO_FX$" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
@@ -148,7 +148,6 @@
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="gui.GUIStarter" />
       <module name="windows" />
-      <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\blink\Documents\JavaFX\lib&quot; --add-modules javafx.controls,javafx.fxml" />
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
           <option name="PATTERN" value="sample.*" />
@@ -208,10 +207,10 @@
     <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="51" y="341" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587715278123">
+    <state x="251" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587722642798">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="51" y="341" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715278123" />
+    <state x="251" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587722642798" />
     <state x="655" y="262" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1587715357806">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -228,30 +227,30 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="722" y="342" key="DetectedRootsChooserDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587673268092" />
-    <state x="168" y="185" key="FileChooserDialogImpl" timestamp="1587673394523">
+    <state x="168" y="185" key="FileChooserDialogImpl" timestamp="1587721760399">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="168" y="185" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587673394523" />
-    <state width="1877" height="250" key="GridCell.Tab.0.bottom" timestamp="1587715329728">
+    <state x="168" y="185" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587721760399" />
+    <state width="1877" height="250" key="GridCell.Tab.0.bottom" timestamp="1587719307423">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="250" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715329728" />
-    <state width="1877" height="250" key="GridCell.Tab.0.center" timestamp="1587715329728">
+    <state width="1877" height="250" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587719307423" />
+    <state width="1877" height="250" key="GridCell.Tab.0.center" timestamp="1587719307423">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="250" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715329728" />
-    <state width="1877" height="250" key="GridCell.Tab.0.left" timestamp="1587715329728">
+    <state width="1877" height="250" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587719307423" />
+    <state width="1877" height="250" key="GridCell.Tab.0.left" timestamp="1587719307423">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="250" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715329728" />
-    <state width="1877" height="250" key="GridCell.Tab.0.right" timestamp="1587715329728">
+    <state width="1877" height="250" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587719307423" />
+    <state width="1877" height="250" key="GridCell.Tab.0.right" timestamp="1587719307423">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="250" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715329728" />
-    <state x="405" y="18" width="1040" height="909" key="SettingsEditor" timestamp="1587715393191">
+    <state width="1877" height="250" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587719307423" />
+    <state x="409" y="60" width="1340" height="866" key="SettingsEditor" timestamp="1587722406800">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="405" y="18" width="1040" height="909" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715393191" />
+    <state x="409" y="60" width="1340" height="866" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587722406800" />
     <state x="569" y="92" key="new project wizard" timestamp="1587673238128">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
