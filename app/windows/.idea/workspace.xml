@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="studioruum" />
+      <artifact name="windows:jar" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
@@ -52,6 +52,13 @@
     </breakpoint_any>
     <ui_properties converted="true" />
     <breakpoint_rules converted="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -139,7 +146,7 @@
       <Port>5050</Port>
     </configuration>
     <configuration name="Main" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="gui.Main" />
+      <option name="MAIN_CLASS_NAME" value="gui.GUIStarter" />
       <module name="windows" />
       <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\blink\Documents\JavaFX\lib&quot; --add-modules javafx.controls,javafx.fxml" />
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
@@ -201,14 +208,14 @@
     <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587673211956">
+    <state x="51" y="341" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1587715278123">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587673211956" />
-    <state x="655" y="262" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1587674186815">
+    <state x="51" y="341" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715278123" />
+    <state x="655" y="262" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1587715357806">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="655" y="262" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587674186815" />
+    <state x="655" y="262" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715357806" />
     <state x="755" y="183" width="619" height="579" key="#com.intellij.openapi.roots.ui.configuration.libraryEditor.LibraryEditorDialog" timestamp="1587673968908">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -225,26 +232,26 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="168" y="185" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587673394523" />
-    <state width="1877" height="250" key="GridCell.Tab.0.bottom" timestamp="1587672290134">
+    <state width="1877" height="250" key="GridCell.Tab.0.bottom" timestamp="1587715329728">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="250" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587672290134" />
-    <state width="1877" height="250" key="GridCell.Tab.0.center" timestamp="1587672290134">
+    <state width="1877" height="250" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715329728" />
+    <state width="1877" height="250" key="GridCell.Tab.0.center" timestamp="1587715329728">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="250" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587672290134" />
-    <state width="1877" height="250" key="GridCell.Tab.0.left" timestamp="1587672290134">
+    <state width="1877" height="250" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715329728" />
+    <state width="1877" height="250" key="GridCell.Tab.0.left" timestamp="1587715329728">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="250" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587672290134" />
-    <state width="1877" height="250" key="GridCell.Tab.0.right" timestamp="1587672290134">
+    <state width="1877" height="250" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715329728" />
+    <state width="1877" height="250" key="GridCell.Tab.0.right" timestamp="1587715329728">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="250" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587672290134" />
-    <state x="405" y="18" width="1040" height="909" key="SettingsEditor" timestamp="1587674218662">
+    <state width="1877" height="250" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715329728" />
+    <state x="405" y="18" width="1040" height="909" key="SettingsEditor" timestamp="1587715393191">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="405" y="18" width="1040" height="909" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587674218662" />
+    <state x="405" y="18" width="1040" height="909" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587715393191" />
     <state x="569" y="92" key="new project wizard" timestamp="1587673238128">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
